@@ -1,4 +1,4 @@
-import { UserRaitingView, MenuView, SortView, ModalView } from './view';
+import { UserRaitingView, MenuView, SortView } from './view';
 import SectionFilmsPresenter from './presenter/section-films-presenter.js';
 import { FilmModel } from './model';
 import { render } from './render.js';
