@@ -2,7 +2,7 @@ import { createElement } from '../render.js';
 import { normalizeFilmDate } from '../utils.js';
 
 const createCardTemplate = (film) => {
-  const {filmInfo : {title, totalRating, poster, runtime, genre, description, release}, id, comments} = film;
+  const {filmInfo : {title, totalRating, poster, runtime, genre, description, release}, comments} = film;
 
   const date = release.date !== null ? normalizeFilmDate(release.date, 'preview-date') : '';
 
