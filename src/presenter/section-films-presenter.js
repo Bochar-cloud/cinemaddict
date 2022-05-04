@@ -48,9 +48,8 @@ export default class SectionFilmsPresenter {
     const escapeKeydownHandler = (evt) => {
       if (evt.key === 'Escape') {
         closeModal();
+        document.removeEventListener('keydown', escapeKeydownHandler);
       }
-
-      document.removeEventListener('keydown', escapeKeydownHandler);
     };
 
     filmLink.addEventListener('click', (evt) => {
