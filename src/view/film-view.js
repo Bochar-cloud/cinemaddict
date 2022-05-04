@@ -3,7 +3,7 @@ import { normalizeFilmDate } from '../utils.js';
 
 const createCardTemplate = (film) => {
   const {
-    filmInfo :{
+    filmInfo: {
       title,
       totalRating,
       poster,
