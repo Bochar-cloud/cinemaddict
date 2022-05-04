@@ -158,24 +158,28 @@ const createModalTemplate = (film, allComments) => {
 };
 
 export default class ModalView {
+  #element = null;
+  #film = null;
+  #filmComments = null;
+
   constructor(film, filmComments) {
-    this.film = film;
-    this.filmComments = filmComments;
+    this.#film = film;
+    this.#filmComments = filmComments;
   }
 
-  getTemplate() {
-    return createModalTemplate(this.film, this.filmComments);
+  get template() {
+    return createModalTemplate(this.#film, this.#filmComments);
   }
 
-  getElement() {
-    if (!this.element) {
-      this.element = createElement(this.getTemplate());
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
     }
 
-    return this.element;
+    return this.#element;
   }
 
   removeElement() {
-    this.element = null;
+    this.#element = null;
   }
 }
