@@ -6,4 +6,4 @@ export { default as MoreButtonView } from './more-button-view.js';
 export { default as SectionFilmsView } from './section-films-view.js';
 export { default as FilmsListView } from './films-list-view.js';
 export { default as FilmsListContainerView } from './films-list-container-view.js';
-export { default as CardView } from './card-view.js';
+export { default as FilmView } from './film-view.js';
