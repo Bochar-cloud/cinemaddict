@@ -6,6 +6,8 @@ const DATE_FORMATS = {
   'preview-date': 'YYYY',
 };
 
+const MINUTES_PER_HOUR = 60;
+
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
   const upper = Math.floor(Math.max(a, b));
@@ -17,6 +19,15 @@ const getRandomFloatInteger = (a = 0, b = 1, float = 1) => (Math.random() * (b -
 
 const normalizeFilmDate = (date, placeDate = 'relise-date') => dayjs(date).format(DATE_FORMATS[placeDate]);
 
-const normalizeRuntime = (time) => time < 60 ? `${time}m` : `${(time / 60).toFixed(0)}h ${time % 60}m`;
+const normalizeRuntime = (time) => {
+  const hourse = (time / MINUTES_PER_HOUR).toFixed(0);
+  const minutes = time % MINUTES_PER_HOUR;
+
+  if (time < MINUTES_PER_HOUR) {
+    return `${minutes}m`;
+  }
+
+  return `${hourse}h ${minutes}m`;
+};
 
 export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime};
