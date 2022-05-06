@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { normalizeFilmDate } from '../utils.js';
+import AbstractView from 'Framework/view/abstract-view';
+import { normalizeFilmDate, normalizeRuntime } from 'Sourse/utils';
 
 const createCardTemplate = (film) => {
   const {
@@ -24,7 +24,7 @@ const createCardTemplate = (film) => {
         <p class="film-card__rating">${totalRating}</p>
         <p class="film-card__info">
           <span class="film-card__year">${date}</span>
-          <span class="film-card__duration">${runtime}</span>
+          <span class="film-card__duration">${normalizeRuntime(runtime)}</span>
           <span class="film-card__genre">${genre.join(', ')}</span>
         </p>
         <img src="${poster}" alt="" class="film-card__poster">
@@ -39,27 +39,28 @@ const createCardTemplate = (film) => {
     </article>`);
 };
 
-export default class FilmView {
+export default class FilmView extends AbstractView {
   #film = null;
-  #element = null;
 
   constructor(film) {
+    super();
     this.#film = film;
   }
 
+  setLinkClickHandler = (callback) => {
+    const link = this.element.querySelector('.film-card__link');
+    this._callback.click = callback;
+
+    link.addEventListener('click', this.#showModal);
+  };
+
+  #showModal = (evt) => {
+    evt.preventDefault();
+
+    this._callback.click();
+  };
+
   get template() {
     return createCardTemplate(this.#film);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }

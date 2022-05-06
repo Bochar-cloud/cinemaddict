@@ -1,4 +1,4 @@
-import { generateFilm, generateComments } from '../mock/film.js';
+import { generateFilm, generateComments } from 'Sourse/mock/film';
 
 const QUALITY_FILMS = 23;
 
