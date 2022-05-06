@@ -1,7 +1,7 @@
-import { UserRaitingView, MenuView, SortView } from './view';
-import SectionFilmsPresenter from './presenter/section-films-presenter.js';
-import { FilmModel } from './model';
-import { render } from './render.js';
+import { UserRaitingView, MenuView, SortView } from 'View';
+import { SectionFilmsPresenter } from 'Presenter';
+import { FilmModel } from 'Model';
+import { render } from 'Framework/render';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');

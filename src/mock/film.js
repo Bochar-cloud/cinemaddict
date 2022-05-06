@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomFloatInteger } from '../utils.js';
+import { getRandomInteger, getRandomFloatInteger } from 'Sourse/utils';
 
 const POINTS_SCALE = 10;
 

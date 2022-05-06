@@ -20,7 +20,20 @@ module.exports = {
         test: /\.js$/,
         exclude: /(node_modules)/,
         use: ['babel-loader']
-      }
+      },
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader']
+      },
     ]
-  }
+  },
+  resolve: {
+    alias: {
+      Sourse: path.resolve(__dirname, 'src'),
+      Model: path.resolve(__dirname, 'src/model/'),
+      View: path.resolve(__dirname, 'src/view/'),
+      Presenter: path.resolve(__dirname, 'src/presenter/'),
+      Framework: path.resolve(__dirname, 'src/framework/'),
+    },
+  },
 };

@@ -1,5 +1,5 @@
-import { SectionFilmsView, FilmsListView, FilmsListContainerView, FilmView, MoreButtonView, ModalView, EmptyFilmsView} from '../view';
-import { render } from '../render';
+import { SectionFilmsView, FilmsListView, FilmsListContainerView, FilmView, MoreButtonView, ModalView, EmptyFilmsView} from 'View';
+import { render } from 'Framework/render';
 
 const FILMS_COUNT_STEP = 5;
 
@@ -30,9 +30,7 @@ export default class SectionFilmsPresenter {
     this.#renderFilmListContainer();
   };
 
-  #clickShowMoreButtonHandler = (evt) => {
-    evt.preventDefault();
-
+  #clickShowMoreButtonHandler = () => {
     this.#films
       .slice(this.#renderFilmsCount, this.#renderFilmsCount + FILMS_COUNT_STEP)
       .forEach((film) => this.#renderFilm(film));
@@ -48,9 +46,6 @@ export default class SectionFilmsPresenter {
   #renderFilm = (film) => {
     const filmComponent = new FilmView(film);
     const modalComponent = new ModalView(film, this.#comments);
-
-    const filmLink = filmComponent.element.querySelector('.film-card__link');
-    const modalCloseButton = modalComponent.element.querySelector('.film-details__close-btn');
 
     const showModal = () => {
       document.body.appendChild(modalComponent.element);
@@ -69,14 +64,12 @@ export default class SectionFilmsPresenter {
       }
     };
 
-    filmLink.addEventListener('click', (evt) => {
-      evt.preventDefault();
+    filmComponent.setLinkClickHandler(() => {
       showModal();
       document.addEventListener('keydown', escapeKeydownHandler);
     });
 
-    modalCloseButton.addEventListener('click', (evt) => {
-      evt.preventDefault();
+    modalComponent.setCloseButtonClickHandler(() => {
       hideModal();
       document.removeEventListener('keydown', escapeKeydownHandler);
     });
@@ -100,11 +93,9 @@ export default class SectionFilmsPresenter {
     }
 
     if (this.#films.length > FILMS_COUNT_STEP) {
-      const showMoreButton = this.#moreButtonComponent.element;
-
       render(this.#moreButtonComponent, this.#filmsListComponent.element);
 
-      showMoreButton.addEventListener('click', this.#clickShowMoreButtonHandler);
+      this.#moreButtonComponent.setMoreButtonClickHandler(this.#clickShowMoreButtonHandler);
     }
   };
 }

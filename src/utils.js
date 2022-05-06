@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 
 const DATE_FORMATS = {
   'relise-date': 'D MMM YYYY',
-  'comment-date': 'YYYY/M/DD HH:mm',
+  'comment-date': 'YYYY/MM/DD HH:mm',
   'preview-date': 'YYYY',
 };
 
@@ -17,4 +17,6 @@ const getRandomFloatInteger = (a = 0, b = 1, float = 1) => (Math.random() * (b -
 
 const normalizeFilmDate = (date, placeDate = 'relise-date') => dayjs(date).format(DATE_FORMATS[placeDate]);
 
-export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate};
+const normalizeRuntime = (time) => time < 60 ? `${time}m` : `${(time / 60).toFixed(0)}h ${time % 60}m`;
+
+export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime};

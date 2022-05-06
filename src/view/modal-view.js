@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
-import { normalizeFilmDate } from '../utils.js';
+import AbstractView from 'Framework/view/abstract-view';
+import { normalizeFilmDate, normalizeRuntime } from 'Sourse/utils.js';
 
 const createModalTemplate = (film, allComments) => {
   const {
@@ -88,7 +88,7 @@ const createModalTemplate = (film, allComments) => {
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Runtime</td>
-                  <td class="film-details__cell">${runtime}</td>
+                  <td class="film-details__cell">${normalizeRuntime(runtime)}</td>
                 </tr>
                 <tr class="film-details__row">
                   <td class="film-details__term">Country</td>
@@ -157,29 +157,30 @@ const createModalTemplate = (film, allComments) => {
     </section>`);
 };
 
-export default class ModalView {
-  #element = null;
+export default class ModalView extends AbstractView {
   #film = null;
   #filmComments = null;
 
   constructor(film, filmComments) {
+    super();
     this.#film = film;
     this.#filmComments = filmComments;
   }
 
+  setCloseButtonClickHandler = (callback) => {
+    const closeButton = this.element.querySelector('.film-details__close-btn');
+    this._callback.click = callback;
+
+    closeButton.addEventListener('click', this.#hideModal);
+  };
+
+  #hideModal = (evt) => {
+    evt.preventDefault();
+
+    this._callback.click();
+  };
+
   get template() {
     return createModalTemplate(this.#film, this.#filmComments);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
