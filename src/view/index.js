@@ -7,3 +7,4 @@ export { default as SectionFilmsView } from './section-films-view.js';
 export { default as FilmsListView } from './films-list-view.js';
 export { default as FilmsListContainerView } from './films-list-container-view.js';
 export { default as FilmView } from './film-view.js';
+export { default as EmptyFilmsView } from './empty-films-view.js';

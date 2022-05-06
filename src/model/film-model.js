@@ -1,6 +1,6 @@
 import { generateFilm, generateComments } from '../mock/film.js';
 
-const QUALITY_FILMS = 12;
+const QUALITY_FILMS = 23;
 
 export default class FilmModel {
   #films = Array.from({length: QUALITY_FILMS}, generateFilm);
