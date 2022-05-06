@@ -24,7 +24,7 @@ const normalizeRuntime = (time) => {
   const minutes = time % MINUTES_PER_HOUR;
 
   if (time < MINUTES_PER_HOUR) {
-    return `${minutes}m`;
+    return `${time}m`;
   }
 
   return `${hourse}h ${minutes}m`;
