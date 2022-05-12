@@ -17,6 +17,8 @@ const getRandomInteger = (a = 0, b = 1) => {
 
 const getRandomFloatInteger = (a = 0, b = 1, float = 1) => (Math.random() * (b - a) + a).toFixed(float);
 
+const getRandomBoolean = () => Boolean(getRandomInteger(0, 1));
+
 const normalizeFilmDate = (date, placeDate = 'relise-date') => dayjs(date).format(DATE_FORMATS[placeDate]);
 
 const normalizeRuntime = (time) => {
@@ -30,4 +32,4 @@ const normalizeRuntime = (time) => {
   return `${hourse}h ${minutes}m`;
 };
 
-export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime};
+export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean};

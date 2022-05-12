@@ -1,4 +1,4 @@
-import { getRandomInteger, getRandomFloatInteger } from 'Sourse/utils';
+import { getRandomInteger, getRandomFloatInteger, getRandomBoolean } from 'Sourse/utils';
 
 const POINTS_SCALE = 10;
 
@@ -87,9 +87,9 @@ export const generateFilm = (val, idx) => ({
     description: getRandomElementFromArray(descriptions)
   },
   userDetails: {
-    watchlist: false,
-    alreadyWatched: true,
+    watchlist: getRandomBoolean(),
+    alreadyWatched: getRandomBoolean(),
     watchingDate: '2019-04-12T16:12:32.554Z',
-    favorite: false
+    favorite: getRandomBoolean()
   }
 });
