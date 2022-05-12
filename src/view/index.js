@@ -1,5 +1,5 @@
 export { default as UserRaitingView } from 'View/user-raiting-view';
-export { default as MenuView } from 'View/menu-view';
+export { default as FilterView } from 'View/filter-view';
 export { default as SortView } from 'View/sort-view';
 export { default as ModalView } from 'View/modal-view';
 export { default as MoreButtonView } from 'View/more-button-view';
