@@ -1,5 +1,7 @@
-import { SectionFilmsView, FilmsListView, FilmsListContainerView, FilmView, MoreButtonView, ModalView, EmptyFilmsView} from 'View';
-import { render } from 'Framework/render';
+import { SectionFilmsView, FilmsListView, FilmsListContainerView, MoreButtonView, EmptyFilmsView } from 'View';
+import { FilmPresenter } from 'Presenter';
+import { render, remove } from 'Framework/render';
+import { updateItem } from 'Sourse/utils';
 
 const FILMS_COUNT_STEP = 5;
 
@@ -18,6 +20,8 @@ export default class SectionFilmsPresenter {
 
   #renderFilmsCount = FILMS_COUNT_STEP;
 
+  #filmPresenter = new Map();
+
   constructor(container, filmModel) {
     this.#container = container;
     this.#filmModel = filmModel;
@@ -30,10 +34,52 @@ export default class SectionFilmsPresenter {
     this.#renderFilmListContainer();
   };
 
-  #clickShowMoreButtonHandler = () => {
+  #renderFilmsList = () => {
+    render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
+
+    this.#renderFilms(0, Math.min(this.#films.length, FILMS_COUNT_STEP));
+
+    if (this.#films.length > FILMS_COUNT_STEP) {
+      this.#renderMoreButton();
+    }
+  };
+
+  #renderFilms = (from, to) => {
     this.#films
-      .slice(this.#renderFilmsCount, this.#renderFilmsCount + FILMS_COUNT_STEP)
-      .forEach((film) => this.#renderFilm(film));
+      .slice(from, to)
+      .forEach((film) => this.#renderFilm(film, this.#comments));
+  };
+
+  #renderFilm = (film, comments) => {
+    const filmPresenter = new FilmPresenter(this.#filmsListContainerComponent.element, this.#filmChangeHandler, this.#changeStatusModalHandler);
+    filmPresenter.init(film, comments);
+    this.#filmPresenter.set(film.id, filmPresenter);
+  };
+
+  #renderEmptyFilm = () => {
+    render(this.#emptyFilmsComponent, this.#filmsListComponent.element);
+  };
+
+  #renderMoreButton = () => {
+    render(this.#moreButtonComponent, this.#filmsListComponent.element);
+
+    this.#moreButtonComponent.setMoreButtonClickHandler(this.#clickShowMoreButtonHandler);
+  };
+
+  #renderFilmListContainer = () => {
+    render(this.#sectionFilmsComponent, this.#container);
+    render(this.#filmsListComponent, this.#sectionFilmsComponent.element);
+
+    if (this.#films.length === 0) {
+      this.#renderEmptyFilm();
+      return;
+    }
+
+    this.#renderFilmsList();
+  };
+
+  #clickShowMoreButtonHandler = () => {
+    this.#renderFilms(this.#renderFilmsCount, this.#renderFilmsCount + FILMS_COUNT_STEP);
 
     this.#renderFilmsCount += FILMS_COUNT_STEP;
 
@@ -43,59 +89,19 @@ export default class SectionFilmsPresenter {
     }
   };
 
-  #renderFilm = (film) => {
-    const filmComponent = new FilmView(film);
-    const modalComponent = new ModalView(film, this.#comments);
-
-    const showModal = () => {
-      document.body.appendChild(modalComponent.element);
-      document.body.classList.add('hide-overflow');
-    };
-
-    const hideModal = () => {
-      document.body.removeChild(modalComponent.element);
-      document.body.classList.remove('hide-overflow');
-    };
-
-    const escapeKeydownHandler = (evt) => {
-      if (evt.key === 'Escape') {
-        hideModal();
-        document.removeEventListener('keydown', escapeKeydownHandler);
-      }
-    };
-
-    filmComponent.setLinkClickHandler(() => {
-      showModal();
-      document.addEventListener('keydown', escapeKeydownHandler);
-    });
-
-    modalComponent.setCloseButtonClickHandler(() => {
-      hideModal();
-      document.removeEventListener('keydown', escapeKeydownHandler);
-    });
-
-    render(filmComponent, this.#filmsListContainerComponent.element);
+  #clearFilmsList = () => {
+    this.#filmPresenter.forEach((presenter) => presenter.destroy());
+    this.#filmPresenter.clear();
+    this.#renderFilmsCount = FILMS_COUNT_STEP;
+    remove(this.#moreButtonComponent);
   };
 
-  #renderFilmListContainer = () => {
-    render(this.#sectionFilmsComponent, this.#container);
-    render(this.#filmsListComponent, this.#sectionFilmsComponent.element);
+  #filmChangeHandler = (updatedFilm) => {
+    this.#films = updateItem(this.#films, updatedFilm);
+    this.#filmPresenter.get(updatedFilm.id).init(updatedFilm, this.#comments);
+  };
 
-    if (this.#films.length === 0) {
-      render(this.#emptyFilmsComponent, this.#filmsListComponent.element);
-      return;
-    }
-
-    render(this.#filmsListContainerComponent, this.#filmsListComponent.element);
-
-    for (let i = 0; i < Math.min(this.#films.length, FILMS_COUNT_STEP); i++) {
-      this.#renderFilm(this.#films[i]);
-    }
-
-    if (this.#films.length > FILMS_COUNT_STEP) {
-      render(this.#moreButtonComponent, this.#filmsListComponent.element);
-
-      this.#moreButtonComponent.setMoreButtonClickHandler(this.#clickShowMoreButtonHandler);
-    }
+  #changeStatusModalHandler = () => {
+    this.#filmPresenter.forEach((presenter) => presenter.resetView());
   };
 }
