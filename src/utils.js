@@ -46,4 +46,31 @@ const updateItem = (items, update) => {
   ];
 };
 
-export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean, updateItem};
+const getWeightForNullDate = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+const compareFilmsDate = (filmA, filmB) => {
+  const filmDateA = filmA.filmInfo.release.date;
+  const filmDateB = filmB.filmInfo.release.date;
+
+  const weight = getWeightForNullDate(filmDateA, filmDateB);
+
+  return weight ?? dayjs(filmDateB).diff(dayjs(filmDateA));
+};
+
+const compareFilmsRaiting = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
+
+export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean, updateItem, compareFilmsDate, compareFilmsRaiting};
