@@ -43,7 +43,7 @@ export default class SectionFilmsPresenter {
   init = () => {
     this.#films = [...this.#filmModel.films];
     this.#comments = [...this.#filmModel.comments];
-    this.backupFilms = [...this.#filmModel.films];
+    this.#backupFilms = [...this.#filmModel.films];
 
     this.#renderFilmListContainer();
   };
