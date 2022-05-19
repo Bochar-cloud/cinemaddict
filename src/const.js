@@ -1,5 +1,5 @@
 const SortType = {
-  DEFAULT:'DEFAULT',
+  DEFAULT: 'DEFAULT',
   DATE: 'DATE',
   RAITING: 'RAITING',
 };

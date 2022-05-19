@@ -27,6 +27,14 @@ export default class SectionFilmsPresenter {
   #currentSortType = SortType.DEFAULT;
   #backupFilms = [];
 
+  #sortMap = {
+    [SortType.DEFAULT]: () => {
+      this.#films = [...this.#filmModel.films];
+    },
+    [SortType.DATE]: () => this.#films.sort(compareFilmsDate),
+    [SortType.RAITING]: () => this.#films.sort(compareFilmsRaiting),
+  };
+
   constructor(container, filmModel) {
     this.#container = container;
     this.#filmModel = filmModel;
@@ -35,7 +43,7 @@ export default class SectionFilmsPresenter {
   init = () => {
     this.#films = [...this.#filmModel.films];
     this.#comments = [...this.#filmModel.comments];
-    this.#backupFilms = [...this.#filmModel.films];
+    this.backupFilms = [...this.#filmModel.films];
 
     this.#renderFilmListContainer();
   };
@@ -129,17 +137,8 @@ export default class SectionFilmsPresenter {
   };
 
   #sortFilms = (sortType) => {
-    switch (sortType) {
-      case SortType.DATE:
-        this.#films.sort(compareFilmsDate);
-        break;
-      case SortType.RAITING:
-        this.#films.sort(compareFilmsRaiting);
-        break;
-      default:
-        this.#films = [...this.#backupFilms];
-    }
-
     this.#currentSortType = sortType;
+
+    return this.#sortMap[sortType]();
   };
 }

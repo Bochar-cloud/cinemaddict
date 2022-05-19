@@ -10,6 +10,8 @@ const createSortTemplate = () => (
 );
 
 export default class SortView extends AbstractView {
+  #activeClass = 'sort__button--active';
+
   get template() {
     return createSortTemplate();
   }

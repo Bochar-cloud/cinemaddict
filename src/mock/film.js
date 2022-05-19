@@ -3,6 +3,8 @@ import dayjs from 'dayjs';
 
 const POINTS_SCALE = 10;
 
+const MAX_YEARS_GAP = 10;
+
 const titles = [
   'The Third Man',
   'Brief Encounter',
@@ -60,9 +62,7 @@ const generateDate = () => {
     return null;
   }
 
-  const maxYearsGap = 10;
-
-  const yearsGap = getRandomInteger(-maxYearsGap, maxYearsGap);
+  const yearsGap = getRandomInteger(-MAX_YEARS_GAP, MAX_YEARS_GAP);
 
   return dayjs().add(yearsGap, 'year').toDate();
 };
