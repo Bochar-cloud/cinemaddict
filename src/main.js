@@ -1,4 +1,4 @@
-import { UserRaitingView, FilterView, SortView } from 'View';
+import { UserRaitingView, FilterView } from 'View';
 import { SectionFilmsPresenter } from 'Presenter';
 import { FilmModel } from 'Model';
 import { render } from 'Framework/render';
@@ -11,6 +11,5 @@ const sectionFilmsPresenter = new SectionFilmsPresenter(siteMainElement, filmMod
 
 render(new UserRaitingView(), siteHeaderElement);
 render(new FilterView(filmModel), siteMainElement);
-render(new SortView(), siteMainElement);
 
 sectionFilmsPresenter.init();

@@ -1,6 +1,9 @@
 import { getRandomInteger, getRandomFloatInteger, getRandomBoolean } from 'Sourse/utils';
+import dayjs from 'dayjs';
 
 const POINTS_SCALE = 10;
+
+const MAX_YEARS_GAP = 10;
 
 const titles = [
   'The Third Man',
@@ -52,6 +55,18 @@ const getRandomElementFromArray = (list) => {
 
 const getRandomArrayLength = (list) => list.slice(0, getRandomInteger(1, list.length - 1));
 
+const generateDate = () => {
+  const isDate = getRandomBoolean();
+
+  if (!isDate) {
+    return null;
+  }
+
+  const yearsGap = getRandomInteger(-MAX_YEARS_GAP, MAX_YEARS_GAP);
+
+  return dayjs().add(yearsGap, 'year').toDate();
+};
+
 export const generateComments = (val, idx) => ({
   commentId: idx,
   author: 'Ilya O Reilly',
@@ -79,7 +94,7 @@ export const generateFilm = (val, idx) => ({
       'Freeman Freeman'
     ],
     release: {
-      date: '2019-05-11T00:00:00.000Z',
+      date: generateDate(),
       releaseCountry: 'Finland'
     },
     runtime: 77,
