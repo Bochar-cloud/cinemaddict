@@ -1,4 +1,4 @@
-import AbstractView from 'Framework/view/abstract-view';
+import AbstractStatefulView from 'Framework/view/abstract-stateful-view';
 import { normalizeFilmDate, normalizeRuntime } from 'Sourse/utils.js';
 
 const createModalTemplate = (film, allComments) => {
@@ -17,7 +17,8 @@ const createModalTemplate = (film, allComments) => {
       actors,
       ageRating
     },
-    comments
+    commentEmotion,
+    comments,
   } = film;
 
   const filmComments = allComments.filter(({commentId}) => comments.some((filmId) => commentId === filmId));
@@ -36,6 +37,10 @@ const createModalTemplate = (film, allComments) => {
         </p>
       </div>
     </li>`
+  );
+
+  const createCommentEmotion = (emotion) => (
+    `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`
   );
 
 
@@ -123,11 +128,15 @@ const createModalTemplate = (film, allComments) => {
             </ul>
 
             <div class="film-details__new-comment">
-              <div class="film-details__add-emoji-label"></div>
+              <div class="film-details__add-emoji-label">
+                ${commentEmotion ? createCommentEmotion(commentEmotion) : ''}
+              </div>
 
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
               </label>
+
+              <input type="hidden" id="comment-emoji" name="comment-emoji">
 
               <div class="film-details__emoji-list">
                 <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
@@ -157,14 +166,15 @@ const createModalTemplate = (film, allComments) => {
     </section>`);
 };
 
-export default class ModalView extends AbstractView {
-  #film = null;
+export default class ModalView extends AbstractStatefulView {
   #filmComments = null;
+  #commentEmotion = null;
 
   constructor(film, filmComments) {
     super();
-    this.#film = film;
+    this._state = this.parseFilmToState(film);
     this.#filmComments = filmComments;
+    this.#setInnerHandlers();
   }
 
   setCloseButtonClickHandler = (callback) => {
@@ -174,13 +184,51 @@ export default class ModalView extends AbstractView {
     closeButton.addEventListener('click', this.#hideModal);
   };
 
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setCloseButtonClickHandler(this._callback.click);
+  };
+
   #hideModal = (evt) => {
     evt.preventDefault();
 
     this._callback.click();
   };
 
+  #emotionsChangeHandler = (evt) => {
+    evt.preventDefault();
+
+    const scrollPosition = this.element.scrollTop;
+
+    this.#commentEmotion = evt.target.value;
+
+    const currentEmotion = this.#commentEmotion;
+
+    this.updateElement({
+      commentEmotion: currentEmotion,
+    });
+
+    this.element.querySelector('#comment-emoji').value = currentEmotion;
+    this.element.scroll(0, scrollPosition);
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emotionsChangeHandler);
+  };
+
+  parseFilmToState = (film) => ({...film,
+    commentEmotion: this.#commentEmotion,
+  });
+
+  parseStateToFilm = (state) => {
+    const film = {...state};
+
+    delete film.commentEmotion;
+
+    return film;
+  };
+
   get template() {
-    return createModalTemplate(this.#film, this.#filmComments);
+    return createModalTemplate(this._state, this.#filmComments);
   }
 }
