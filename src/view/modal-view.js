@@ -43,7 +43,6 @@ const createModalTemplate = (film, allComments) => {
     `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`
   );
 
-
   const createGenre = (genreItem) => (
     `<span class="film-details__genre">${genreItem}</span>`
   );
