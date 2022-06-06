@@ -64,6 +64,7 @@ export default class FilmPresenter {
 
   resetView = () => {
     if (this.#status !== Status.HIDE) {
+      this.#modalComponent.reset(this.#film);
       this.#hideModal();
     }
   };
@@ -85,6 +86,7 @@ export default class FilmPresenter {
 
   #escapeKeydownHandler = (evt) => {
     if (evt.key === 'Escape') {
+      this.#modalComponent.reset(this.#film);
       this.#hideModal();
     }
   };
@@ -94,6 +96,7 @@ export default class FilmPresenter {
   };
 
   #closeButtonClickHandler = () => {
+    this.#modalComponent.reset(this.#film);
     this.#hideModal();
   };
 

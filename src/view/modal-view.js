@@ -18,6 +18,7 @@ const createModalTemplate = (film, allComments) => {
       ageRating
     },
     commentEmotion,
+    commentText,
     comments,
   } = film;
 
@@ -132,7 +133,7 @@ const createModalTemplate = (film, allComments) => {
               </div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentText ? commentText : ''}</textarea>
               </label>
 
               <input type="hidden" id="comment-emoji" name="comment-emoji">
@@ -183,6 +184,12 @@ export default class ModalView extends AbstractStatefulView {
     closeButton.addEventListener('click', this.#hideModal);
   };
 
+  reset = (film) => {
+    this.updateElement(
+      this.parseFilmToState(film),
+    );
+  };
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setCloseButtonClickHandler(this._callback.click);
@@ -211,17 +218,28 @@ export default class ModalView extends AbstractStatefulView {
     this.element.scroll(0, scrollPosition);
   };
 
+  #commentInputHandler = (evt) => {
+    evt.preventDefault();
+
+    this._setState({
+      commentText: evt.target.value
+    });
+  };
+
   #setInnerHandlers = () => {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emotionsChangeHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   };
 
   parseFilmToState = (film) => ({...film,
-    commentEmotion: this.#commentEmotion,
+    commentEmotion: film.commentEmotion,
+    commentText: film.commentText,
   });
 
   parseStateToFilm = (state) => {
     const film = {...state};
 
+    delete film.commentText;
     delete film.commentEmotion;
 
     return film;
