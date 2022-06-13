@@ -20,14 +20,15 @@ export default class FilmPresenter {
   #status = Status.HIDE;
 
   #commentsModel = null;
-
   #saveModalScroll = null;
+  #inActiveModal = null;
 
-  constructor(filmListContainer, changeData, changeStatus, saveModalScroll) {
+  constructor(filmListContainer, changeData, changeStatus, saveModalScroll, inActiveModal) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
     this.#changeStatus = changeStatus;
     this.#saveModalScroll = saveModalScroll;
+    this.#inActiveModal = inActiveModal;
   }
 
   init = (film, comments, isModalShow, scrollTop) => {
@@ -102,6 +103,7 @@ export default class FilmPresenter {
       document.body.removeChild(this.#modalComponent.element);
       document.body.classList.remove('hide-overflow');
       document.removeEventListener('keydown', this.#escapeKeydownHandler);
+      this.#inActiveModal();
       this.#status = Status.HIDE;
     }
   };

@@ -101,7 +101,7 @@ export default class SectionFilmsPresenter {
   };
 
   #renderFilm = (film, comments) => {
-    const filmPresenter = new FilmPresenter(this.#filmsListContainerComponent.element, this.#handleViewAction, this.#changeStatusModalHandler, this.#saveModalScroll);
+    const filmPresenter = new FilmPresenter(this.#filmsListContainerComponent.element, this.#handleViewAction, this.#changeStatusModalHandler, this.#saveModalScroll, this.#inActiveModal);
     filmPresenter.init(film, comments, this.#activeModal === film.id, this.#scrollTop);
     this.#filmPresenter.set(film.id, filmPresenter);
   };
@@ -156,8 +156,6 @@ export default class SectionFilmsPresenter {
 
     this.#renderFilms(films.slice(0, Math.min(filmCount, this.#renderFilmsCount)));
 
-    this.#activeModal = null;
-
     if (filmCount > this.#renderFilmsCount) {
       this.#renderMoreButton();
     }
@@ -180,6 +178,10 @@ export default class SectionFilmsPresenter {
     this.#filmPresenter.forEach((presenter) => presenter.resetView());
     this.#activeModal = id;
     this.#scrollTop = scrollTop;
+  };
+
+  #inActiveModal = () => {
+    this.#activeModal = null;
   };
 
   #renderSort = () => {
