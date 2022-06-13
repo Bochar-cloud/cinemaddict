@@ -1,5 +1,6 @@
 import { FilmView, ModalView } from 'View';
 import { render, remove, replace } from 'Framework/render';
+import { UserAction, UpdateType } from 'Sourse/const';
 
 const Status = {
   HIDE: 'HIDE',
@@ -18,18 +19,24 @@ export default class FilmPresenter {
 
   #status = Status.HIDE;
 
-  constructor(filmListContainer, changeData, changeStatus) {
+  #commentsModel = null;
+
+  #saveModalScroll = null;
+
+  constructor(filmListContainer, changeData, changeStatus, saveModalScroll) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
     this.#changeStatus = changeStatus;
+    this.#saveModalScroll = saveModalScroll;
   }
 
-  init = (film, comments) => {
+  init = (film, comments, isModalShow, scrollTop) => {
     this.#film = film;
-    this.#comments = comments;
+    this.#comments = comments.comments;
+
+    this.#commentsModel = comments;
 
     const prevFilmComponent = this.#filmComponent;
-    const prevModalComponent = this.#modalComponent;
 
     this.#filmComponent = new FilmView(this.#film);
     this.#modalComponent = new ModalView(this.#film, this.#comments);
@@ -39,8 +46,22 @@ export default class FilmPresenter {
     this.#filmComponent.setWatchedClickHandler(this.#watchedClickHandler);
     this.#filmComponent.setFavoriteClickHandler(this.#favoriteClickHandler);
     this.#modalComponent.setCloseButtonClickHandler(this.#closeButtonClickHandler);
+    this.#modalComponent.setDeleteCommentClickHandler(this.#deleteCommentClickHandler);
+    this.#modalComponent.setFormSubmitHandler(this.#formSubmitHandler);
 
-    if (prevFilmComponent === null || prevModalComponent === null) {
+    if (isModalShow) {
+      this.#showModal();
+    }
+
+    if (scrollTop) {
+      this.#modalComponent.element.scroll({
+        left: 0,
+        top: scrollTop,
+        behavior: 'smooth',
+      });
+    }
+
+    if (prevFilmComponent === null) {
       render(this.#filmComponent, this.#filmListContainer);
       return;
     }
@@ -50,11 +71,10 @@ export default class FilmPresenter {
     }
 
     if (this.#status === Status.SHOW) {
-      replace(this.#modalComponent, prevModalComponent);
+      replace(this.#filmComponent, prevFilmComponent);
     }
 
     remove(prevFilmComponent);
-    remove(prevModalComponent);
   };
 
   destroy = () => {
@@ -73,15 +93,17 @@ export default class FilmPresenter {
     document.body.appendChild(this.#modalComponent.element);
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#escapeKeydownHandler);
-    this.#changeStatus();
+    this.#changeStatus(this.#film.id);
     this.#status = Status.SHOW;
   };
 
   #hideModal = () => {
-    document.body.removeChild(this.#modalComponent.element);
-    document.body.classList.remove('hide-overflow');
-    document.removeEventListener('keydown', this.#escapeKeydownHandler);
-    this.#status = Status.HIDE;
+    if (document.body.contains(this.#modalComponent.element)) {
+      document.body.removeChild(this.#modalComponent.element);
+      document.body.classList.remove('hide-overflow');
+      document.removeEventListener('keydown', this.#escapeKeydownHandler);
+      this.#status = Status.HIDE;
+    }
   };
 
   #escapeKeydownHandler = (evt) => {
@@ -100,15 +122,53 @@ export default class FilmPresenter {
     this.#hideModal();
   };
 
+  #deleteCommentClickHandler = (commentId, scrollTop) => {
+    this.#saveModalScroll(scrollTop);
+    const filmComments = this.#film.comments.filter((comment) => comment !== commentId);
+
+    this.#commentsModel.deleteComment(UpdateType.MINOR, commentId);
+
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...this.#film, comments: filmComments}
+    );
+  };
+
+  #formSubmitHandler = (film, newComment, scrollTop) => {
+    this.#saveModalScroll(scrollTop);
+    film.comments.unshift(newComment.commentId);
+
+    this.#commentsModel.addComment(UpdateType.MINOR, newComment);
+
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...film, comments: film.comments}
+    );
+  };
+
   #watchListClickHandler = () => {
-    this.#changeData({...this.#film, userDetails: { watchlist: !this.#film.userDetails.watchlist }});
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...this.#film, userDetails: { watchlist: !this.#film.userDetails.watchlist }}
+    );
   };
 
   #watchedClickHandler = () => {
-    this.#changeData({...this.#film, userDetails: { alreadyWatched: !this.#film.userDetails.alreadyWatched }});
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...this.#film, userDetails: { alreadyWatched: !this.#film.userDetails.alreadyWatched }}
+    );
   };
 
   #favoriteClickHandler = () => {
-    this.#changeData({...this.#film, userDetails: { favorite: !this.#film.userDetails.favorite }});
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...this.#film, userDetails: { favorite: !this.#film.userDetails.favorite }}
+    );
   };
 }

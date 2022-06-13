@@ -1,4 +1,6 @@
 import dayjs from 'dayjs';
+import { FilterType } from 'Sourse/const';
+
 
 const DATE_FORMATS = {
   'relise-date': 'D MMM YYYY',
@@ -32,20 +34,6 @@ const normalizeRuntime = (time) => {
   return `${hourse}h ${minutes}m`;
 };
 
-const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return items;
-  }
-
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1),
-  ];
-};
-
 const getWeightForNullDate = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -73,4 +61,11 @@ const compareFilmsDate = (filmA, filmB) => {
 
 const compareFilmsRaiting = (filmA, filmB) => filmB.filmInfo.totalRating - filmA.filmInfo.totalRating;
 
-export {getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean, updateItem, compareFilmsDate, compareFilmsRaiting};
+const filter = {
+  [FilterType.ALL]: (films) => films,
+  [FilterType.WATCHLIST]: (films) => films.filter(({userDetails: { watchlist }}) => watchlist),
+  [FilterType.HISTORY]: (films) => films.filter(({userDetails: { alreadyWatched }}) => alreadyWatched),
+  [FilterType.FAVORITES]: (films) => films.filter(({userDetails: { favorite }}) => favorite),
+};
+
+export { getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean, compareFilmsDate, compareFilmsRaiting, filter };

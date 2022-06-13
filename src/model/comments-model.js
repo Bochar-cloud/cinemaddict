@@ -18,8 +18,8 @@ export default class CommentsModel extends Observable {
     this._notify(updateType, update);
   };
 
-  deleteComment = (updateType, update) => {
-    const idx = this.#comments.findIndex((comment) => comment.commentId === update.commentId);
+  deleteComment = (updateType, commentId) => {
+    const idx = this.#comments.findIndex((comment) => comment.commentId === commentId);
 
     if (idx === -1) {
       throw new Error('Can\'t delete unexisting comment');
@@ -30,6 +30,6 @@ export default class CommentsModel extends Observable {
       ...this.#comments.slice(idx + 1),
     ];
 
-    this._notify(updateType);
+    this._notify(updateType, commentId);
   };
 }

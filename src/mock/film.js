@@ -77,7 +77,7 @@ export const generateComments = (val, idx) => ({
 
 export const generateFilm = (val, idx) => ({
   id: idx,
-  comments: [1, 3],
+  comments: [1, 3, 5],
   filmInfo: {
     title: getRandomElementFromArray(titles),
     alternativeTitle: 'Laziness Who Sold Themselves',

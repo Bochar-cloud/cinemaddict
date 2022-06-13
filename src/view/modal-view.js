@@ -1,7 +1,9 @@
+import he from 'he';
 import AbstractStatefulView from 'Framework/view/abstract-stateful-view';
 import { normalizeFilmDate, normalizeRuntime } from 'Sourse/utils.js';
 
-const createModalTemplate = (film, allComments) => {
+const createModalTemplate = (film, commentsModel) => {
+
   const {
     filmInfo : {
       title,
@@ -22,19 +24,19 @@ const createModalTemplate = (film, allComments) => {
     comments,
   } = film;
 
-  const filmComments = allComments.filter(({commentId}) => comments.some((filmId) => commentId === filmId));
+  const filmComments = commentsModel.filter((comment) => comments.some((filmId) => comment.commentId === filmId));
 
-  const createComments = ({author, comment, commentDate, emotion}) => (
+  const createComments = ({commentId, author, comment, commentDate, emotion}) => (
     `<li class="film-details__comment">
       <span class="film-details__comment-emoji">
         <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
       </span>
       <div>
-        <p class="film-details__comment-text">${comment}</p>
+        <p class="film-details__comment-text">${he.encode(comment)}</p>
         <p class="film-details__comment-info">
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${normalizeFilmDate(commentDate, 'comment-date')}</span>
-          <button class="film-details__comment-delete">Delete</button>
+          <button class="film-details__comment-delete" data-comment-id="${commentId}">Delete</button>
         </p>
       </div>
     </li>`
@@ -108,6 +110,27 @@ const createModalTemplate = (film, allComments) => {
 
               <p class="film-details__film-description">
                 ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
+                ${description}
               </p>
             </div>
           </div>
@@ -169,6 +192,7 @@ const createModalTemplate = (film, allComments) => {
 export default class ModalView extends AbstractStatefulView {
   #filmComments = null;
   #commentEmotion = null;
+  #scrollTop = null;
 
   constructor(film, filmComments) {
     super();
@@ -184,6 +208,20 @@ export default class ModalView extends AbstractStatefulView {
     closeButton.addEventListener('click', this.#hideModal);
   };
 
+  setDeleteCommentClickHandler = (callback) => {
+    const deleteButtons = this.element.querySelectorAll('.film-details__comment-delete');
+    this._callback.deleteClick = callback;
+
+    deleteButtons.forEach((button) => button.addEventListener('click', this.#deleteCommentClickHandler));
+  };
+
+  setFormSubmitHandler = (callback) => {
+    const commentInput = this.element.querySelector('.film-details__comment-input');
+    this._callback.commentFormSubmit = callback;
+
+    commentInput.addEventListener('keydown', this.#formSubmitHandler);
+  };
+
   reset = (film) => {
     this.updateElement(
       this.parseFilmToState(film),
@@ -193,12 +231,34 @@ export default class ModalView extends AbstractStatefulView {
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.setCloseButtonClickHandler(this._callback.click);
+    this.setDeleteCommentClickHandler(this._callback.deleteClick);
+    this.setFormSubmitHandler(this._callback.commentFormSubmit);
   };
 
   #hideModal = (evt) => {
     evt.preventDefault();
-
     this._callback.click();
+  };
+
+  #formSubmitHandler = (evt) => {
+    if (evt.ctrlKey && evt.key === 'Enter') {
+      evt.preventDefault();
+      this.#scrollTop = this.element.scrollTop;
+
+      const currentFilm = this.parseStateToFilm(this._state);
+
+      this._callback.commentFormSubmit(currentFilm ,this.#createNewCommentTemplate(evt), this.#scrollTop);
+    }
+  };
+
+  #deleteCommentClickHandler = (evt) => {
+    evt.preventDefault();
+
+    this.#scrollTop = this.element.scrollTop;
+
+    const commentId = +evt.target.getAttribute('data-comment-id');
+
+    this._callback.deleteClick(commentId, this.#scrollTop);
   };
 
   #emotionsChangeHandler = (evt) => {
@@ -230,6 +290,14 @@ export default class ModalView extends AbstractStatefulView {
     this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emotionsChangeHandler);
     this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
   };
+
+  #createNewCommentTemplate = (evt) => ({
+    commentId: this.#filmComments.length + 1,
+    author: 'Reilly',
+    date: new Date(),
+    comment: evt.target.value,
+    emotion: this.#commentEmotion,
+  });
 
   parseFilmToState = (film) => ({...film,
     commentEmotion: film.commentEmotion,
