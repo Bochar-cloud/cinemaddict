@@ -15,10 +15,10 @@ const titles = [
 ];
 
 const descriptions = [
-  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
-  'Cras aliquet varius magna, non porta ligula feugiat eget.',
-  'Fusce tristique felis at fermentum pharetra',
-  'Aliquam id orci ut lectus varius viverra.',
+  'Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  'Cras aliquet varius magna, non porta ligula feugiat eget.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  'Fusce tristique felis at fermentum pharetraLorem ipsum dolor sit amet, consectetur adipiscing elit.Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+  'Aliquam id orci ut lectus varius viverra.Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante.',
 ];
 

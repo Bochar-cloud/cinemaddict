@@ -16,11 +16,7 @@ export default class FilmModel extends Observable {
       throw new Error('Can\'t update unexisting movie');
     }
 
-    this.#films = [
-      ...this.#films.slice(0, index),
-      update,
-      ...this.#films.slice(index + 1),
-    ];
+    this.#films.splice(index, 1, update);
 
     this._notify(updateType, update);
   };

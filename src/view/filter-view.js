@@ -1,4 +1,5 @@
 import AbstractView from 'Framework/view/abstract-view';
+import classNames from 'classnames';
 
 const filterName = {
   'all': 'All movies',
@@ -11,7 +12,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
   const {type, name, count} = filter;
 
   return (
-    `<a href="#${name}" class="main-navigation__item ${type === currentFilterType ? 'main-navigation__item--active' : ''}" data-filter-type="${type}">
+    `<a href="#${name}" class="main-navigation__item ${classNames({'main-navigation__item--active' : type === currentFilterType})}" data-filter-type="${type}">
       ${filterName[name]} ${type !== 'all' ? `<span class="main-navigation__item-count">${count}</span>` : ''}
     </a>`
   );

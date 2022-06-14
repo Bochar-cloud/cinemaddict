@@ -55,11 +55,7 @@ export default class FilmPresenter {
     }
 
     if (scrollTop) {
-      this.#modalComponent.element.scroll({
-        left: 0,
-        top: scrollTop,
-        behavior: 'smooth',
-      });
+      this.#modalComponent.element.scroll(0, scrollTop);
     }
 
     if (prevFilmComponent === null) {

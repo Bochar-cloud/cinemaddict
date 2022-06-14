@@ -110,27 +110,6 @@ const createModalTemplate = (film, commentsModel) => {
 
               <p class="film-details__film-description">
                 ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
-                ${description}
               </p>
             </div>
           </div>
