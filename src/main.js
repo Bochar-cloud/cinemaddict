@@ -1,15 +1,19 @@
-import { UserRaitingView, FilterView } from 'View';
-import { SectionFilmsPresenter } from 'Presenter';
-import { FilmModel } from 'Model';
+import { UserRaitingView } from 'View';
+import { SectionFilmsPresenter, FilterPresenter } from 'Presenter';
+import { FilmModel, CommentsModel, FilterModel } from 'Model';
 import { render } from 'Framework/render';
 
 const siteHeaderElement = document.querySelector('.header');
 const siteMainElement = document.querySelector('.main');
 
 const filmModel = new FilmModel();
-const sectionFilmsPresenter = new SectionFilmsPresenter(siteMainElement, filmModel);
+const commentsModel = new CommentsModel();
+const filterModel = new FilterModel();
+
+const sectionFilmsPresenter = new SectionFilmsPresenter(siteMainElement, filmModel, commentsModel, filterModel);
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmModel);
 
 render(new UserRaitingView(), siteHeaderElement);
-render(new FilterView(filmModel), siteMainElement);
 
+filterPresenter.init();
 sectionFilmsPresenter.init();
