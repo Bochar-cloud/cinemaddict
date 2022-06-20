@@ -1,9 +1,29 @@
-import { generateComments } from 'Sourse/mock/film';
-import { QUALITY_FILMS } from 'Sourse/const';
 import Observable from 'Framework/observable';
+import { UpdateType } from 'Sourse/const';
 
 export default class CommentsModel extends Observable {
-  #comments = Array.from({length: QUALITY_FILMS}, generateComments);
+  #apiService = null;
+  #comments = [];
+
+  constructor (apiService) {
+    super();
+    this.#apiService = apiService;
+  }
+
+  loadComments = async (film) => {
+    try {
+      const comments = await this.#apiService.getComments(film.id);
+      this.#comments = comments.map(this.#adaptToClient);
+    } catch(err) {
+      this.#comments = [];
+    }
+
+    this._notify(UpdateType.PATCH, film);
+  };
+
+  resetComments = () => {
+    this.#comments = [];
+  };
 
   get comments() {
     return this.#comments;
@@ -19,5 +39,17 @@ export default class CommentsModel extends Observable {
     this.#comments.filter((comments) => comments.commentId !== commentId);
 
     this._notify(updateType, commentId);
+  };
+
+  #adaptToClient = (comment) => {
+    const adaptedComment = {...comment,
+      commentId: comment['id'],
+      commentDate: comment['date']
+    };
+
+    delete adaptedComment['id'];
+    delete adaptedComment['date'];
+
+    return adaptedComment;
   };
 }

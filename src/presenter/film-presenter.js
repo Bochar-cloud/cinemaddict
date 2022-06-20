@@ -12,14 +12,13 @@ export default class FilmPresenter {
   #film = null;
   #filmComponent = null;
   #modalComponent = null;
-  #comments = null;
+  #commentsModel = null;
   #changeData = null;
 
   #changeStatus = null;
 
   #status = Status.HIDE;
 
-  #commentsModel = null;
   #saveModalScroll = null;
   #inActiveModal = null;
 
@@ -31,16 +30,13 @@ export default class FilmPresenter {
     this.#inActiveModal = inActiveModal;
   }
 
-  init = (film, comments, isModalShow, scrollTop) => {
+  init = (film, commentsModel, isModalShow, scrollTop) => {
     this.#film = film;
-    this.#comments = comments.comments;
-
-    this.#commentsModel = comments;
-
+    this.#commentsModel = commentsModel;
     const prevFilmComponent = this.#filmComponent;
 
     this.#filmComponent = new FilmView(this.#film);
-    this.#modalComponent = new ModalView(this.#film, this.#comments);
+    this.#modalComponent = new ModalView(this.#film, this.#commentsModel.comments);
 
     this.#filmComponent.setLinkClickHandler(this.#filmClickHandler);
     this.#filmComponent.setWatchListClickHandler(this.#watchListClickHandler);
@@ -87,6 +83,12 @@ export default class FilmPresenter {
   };
 
   #showModal = () => {
+    if (!this.#commentsModel.comments.length) {
+      this.#commentsModel.loadComments(this.#film);
+      this.#changeStatus(this.#film.id);
+      return;
+    }
+
     document.body.appendChild(this.#modalComponent.element);
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#escapeKeydownHandler);
@@ -96,6 +98,7 @@ export default class FilmPresenter {
 
   #hideModal = () => {
     if (document.body.contains(this.#modalComponent.element)) {
+      this.#commentsModel.resetComments();
       document.body.removeChild(this.#modalComponent.element);
       document.body.classList.remove('hide-overflow');
       document.removeEventListener('keydown', this.#escapeKeydownHandler);
@@ -150,7 +153,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: { watchlist: !this.#film.userDetails.watchlist }}
+      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist }}
     );
   };
 
@@ -158,7 +161,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: { alreadyWatched: !this.#film.userDetails.alreadyWatched }}
+      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }}
     );
   };
 
@@ -166,7 +169,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: { favorite: !this.#film.userDetails.favorite }}
+      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite }}
     );
   };
 }
