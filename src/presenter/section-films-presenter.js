@@ -1,4 +1,4 @@
-import { SectionFilmsView, FilmsListView, FilmsListContainerView, MoreButtonView, EmptyFilmsView, SortView } from 'View';
+import { SectionFilmsView, FilmsListView, FilmsListContainerView, MoreButtonView, EmptyFilmsView, SortView, LoadingView } from 'View';
 import { FilmPresenter } from 'Presenter';
 import { render, remove, RenderPosition } from 'Framework/render';
 import { compareFilmsDate, compareFilmsRaiting, filter } from 'Sourse/utils';
@@ -10,6 +10,7 @@ export default class SectionFilmsPresenter {
   #sectionFilmsComponent = new SectionFilmsView();
   #filmsListComponent = new FilmsListView();
   #filmsListContainerComponent = new FilmsListContainerView();
+  #loadingComponent = new LoadingView();
 
   #emptyFilmsComponent = null;
   #sortComponent = null;
@@ -30,6 +31,7 @@ export default class SectionFilmsPresenter {
 
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
+  #isLoading = true;
 
   #sortMap = {
     [SortType.DEFAULT]: (filteredFilms) => filteredFilms,
@@ -45,6 +47,7 @@ export default class SectionFilmsPresenter {
 
     this.#filmModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
+    this.#commentsModel.addObserver(this.#handleModelEvent);
   }
 
   init = () => {
@@ -81,7 +84,7 @@ export default class SectionFilmsPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#filmPresenter.get(data.id).init(data, this.#commentsModel);
+        this.#filmPresenter.get(data.id).init(data, this.#commentsModel, this.#activeModal === data.id);
         break;
       case UpdateType.MINOR:
         this.#clearFilmListContainer();
@@ -91,7 +94,16 @@ export default class SectionFilmsPresenter {
         this.#clearFilmListContainer({resetRenderFilmsCount: true, resetSortType: true});
         this.#renderFilmListContainer();
         break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
+        this.#renderFilmListContainer();
+        break;
     }
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#filmsListComponent.element);
   };
 
   #renderFilms = (films) => {
@@ -101,7 +113,14 @@ export default class SectionFilmsPresenter {
   };
 
   #renderFilm = (film, comments) => {
-    const filmPresenter = new FilmPresenter(this.#filmsListContainerComponent.element, this.#handleViewAction, this.#changeStatusModalHandler, this.#saveModalScroll, this.#inActiveModal);
+    const filmPresenter = new FilmPresenter(
+      this.#filmsListContainerComponent.element,
+      this.#handleViewAction,
+      this.#changeStatusModalHandler,
+      this.#saveModalScroll,
+      this.#inActiveModal,
+    );
+
     filmPresenter.init(film, comments, this.#activeModal === film.id, this.#scrollTop);
     this.#filmPresenter.set(film.id, filmPresenter);
   };
@@ -140,11 +159,16 @@ export default class SectionFilmsPresenter {
   };
 
   #renderFilmListContainer = () => {
-    const films = this.films;
-    const filmCount = films.length;
-
     render(this.#sectionFilmsComponent, this.#container);
     render(this.#filmsListComponent, this.#sectionFilmsComponent.element);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
+    const films = this.films;
+    const filmCount = films.length;
 
     if (this.films.length === 0) {
       this.#renderEmptyFilm();

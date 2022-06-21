@@ -1,8 +1,9 @@
 import he from 'he';
 import AbstractStatefulView from 'Framework/view/abstract-stateful-view';
 import { normalizeFilmDate, normalizeRuntime } from 'Sourse/utils.js';
+import classNames from 'classnames';
 
-const createModalTemplate = (film, commentsModel) => {
+const createModalTemplate = (film, filmComments) => {
 
   const {
     filmInfo : {
@@ -19,12 +20,18 @@ const createModalTemplate = (film, commentsModel) => {
       actors,
       ageRating
     },
+    userDetails : {
+      watchlist,
+      alreadyWatched,
+      favorite,
+    },
     commentEmotion,
     commentText,
-    comments,
   } = film;
 
-  const filmComments = commentsModel.filter((comment) => comments.some((filmId) => comment.commentId === filmId));
+  const watchlistClasses = classNames({'film-details__control-button--active' : watchlist});
+  const alreadyWatchedClasses = classNames({'film-details__control-button--active' : alreadyWatched});
+  const favoriteClasses = classNames({'film-details__control-button--active' : favorite});
 
   const createComments = ({commentId, author, comment, commentDate, emotion}) => (
     `<li class="film-details__comment">
@@ -115,9 +122,9 @@ const createModalTemplate = (film, commentsModel) => {
           </div>
 
           <section class="film-details__controls">
-            <button type="button" class="film-details__control-button film-details__control-button--watchlist" id="watchlist" name="watchlist">Add to watchlist</button>
-            <button type="button" class="film-details__control-button film-details__control-button--active film-details__control-button--watched" id="watched" name="watched">Already watched</button>
-            <button type="button" class="film-details__control-button film-details__control-button--favorite" id="favorite" name="favorite">Add to favorites</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watchlist ${watchlistClasses}" id="watchlist" name="watchlist">Add to watchlist</button>
+            <button type="button" class="film-details__control-button film-details__control-button--watched ${alreadyWatchedClasses}" id="watched" name="watched">Already watched</button>
+            <button type="button" class="film-details__control-button film-details__control-button--favorite ${favoriteClasses}" id="favorite" name="favorite">Add to favorites</button>
           </section>
         </div>
 

@@ -1,5 +1,10 @@
 const QUALITY_FILMS = 23;
 
+const Method = {
+  GET: 'GET',
+  PUT: 'PUT',
+};
+
 const SortType = {
   DEFAULT: 'DEFAULT',
   DATE: 'DATE',
@@ -16,6 +21,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
+  INIT: 'INIT',
 };
 
 const FilterType = {
@@ -25,4 +31,4 @@ const FilterType = {
   FAVORITES: 'favorites',
 };
 
-export { SortType, QUALITY_FILMS, UserAction, UpdateType, FilterType };
+export { SortType, QUALITY_FILMS, UserAction, UpdateType, FilterType, Method };
