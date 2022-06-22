@@ -278,9 +278,6 @@ export default class ModalView extends AbstractStatefulView {
   };
 
   #createNewCommentTemplate = (evt) => ({
-    commentId: this.#filmComments.length + 1,
-    author: 'Reilly',
-    date: new Date(),
     comment: evt.target.value,
     emotion: this.#commentEmotion,
   });

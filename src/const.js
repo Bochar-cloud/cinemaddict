@@ -3,6 +3,8 @@ const QUALITY_FILMS = 23;
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 const SortType = {
