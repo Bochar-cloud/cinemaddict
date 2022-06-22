@@ -29,6 +29,8 @@ const createModalTemplate = (film, filmComments) => {
     commentText,
   } = film;
 
+  console.log(filmComments);
+
   const watchlistClasses = classNames({'film-details__control-button--active' : watchlist});
   const alreadyWatchedClasses = classNames({'film-details__control-button--active' : alreadyWatched});
   const favoriteClasses = classNames({'film-details__control-button--active' : favorite});
@@ -278,9 +280,6 @@ export default class ModalView extends AbstractStatefulView {
   };
 
   #createNewCommentTemplate = (evt) => ({
-    commentId: this.#filmComments.length + 1,
-    author: 'Reilly',
-    date: new Date(),
     comment: evt.target.value,
     emotion: this.#commentEmotion,
   });

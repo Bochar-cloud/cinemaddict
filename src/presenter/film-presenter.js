@@ -140,7 +140,7 @@ export default class FilmPresenter {
     this.#saveModalScroll(scrollTop);
     film.comments.unshift(newComment.commentId);
 
-    this.#commentsModel.addComment(UpdateType.MINOR, newComment);
+    this.#commentsModel.addComment(UpdateType.MINOR, film.id , newComment);
 
     this.#changeData(
       UserAction.UPDATE_FILM,

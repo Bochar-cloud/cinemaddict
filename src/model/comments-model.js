@@ -18,7 +18,7 @@ export default class CommentsModel extends Observable {
       this.#comments = [];
     }
 
-    this._notify(UpdateType.PATCH, film);
+    this._notify(UpdateType.MINOR, film);
   };
 
   resetComments = () => {
@@ -29,16 +29,28 @@ export default class CommentsModel extends Observable {
     return this.#comments;
   }
 
-  addComment = (updateType, update) => {
-    this.#comments.unshift(update);
+  addComment = async (updateType, filmId, newFilmComment) => {
+    try {
+      await this.#apiService.addComment(filmId ,newFilmComment);
 
-    this._notify(updateType, update);
+      this.#comments.push(newFilmComment);
+
+      this._notify(updateType, newFilmComment);
+
+    } catch {
+      throw new Error('Can\'t add comment');
+    }
   };
 
-  deleteComment = (updateType, commentId) => {
-    this.#comments.filter((comments) => comments.commentId !== commentId);
+  deleteComment = async (updateType, commentId) => {
+    try {
+      await this.#apiService.deleteComment(commentId);
+      this.#comments.filter((comment) => comment.commentId !== commentId);
 
-    this._notify(updateType, commentId);
+      this._notify(updateType);
+    } catch {
+      throw new Error('Can\'t delete comment');
+    }
   };
 
   #adaptToClient = (comment) => {
