@@ -29,8 +29,6 @@ const createModalTemplate = (film, filmComments) => {
     commentText,
   } = film;
 
-  console.log(filmComments);
-
   const watchlistClasses = classNames({'film-details__control-button--active' : watchlist});
   const alreadyWatchedClasses = classNames({'film-details__control-button--active' : alreadyWatched});
   const favoriteClasses = classNames({'film-details__control-button--active' : favorite});
