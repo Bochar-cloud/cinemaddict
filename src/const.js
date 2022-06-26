@@ -33,4 +33,10 @@ const FilterType = {
   FAVORITES: 'favorites',
 };
 
-export { SortType, QUALITY_FILMS, UserAction, UpdateType, FilterType, Method };
+const RitingType = {
+  NOVICE: 'NOVICE',
+  FAN: 'FAN',
+  BUFF: 'BUFF',
+};
+
+export { SortType, QUALITY_FILMS, UserAction, UpdateType, FilterType, Method, RitingType };

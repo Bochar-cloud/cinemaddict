@@ -45,6 +45,9 @@ export default class FilmPresenter {
     this.#modalComponent.setCloseButtonClickHandler(this.#closeButtonClickHandler);
     this.#modalComponent.setDeleteCommentClickHandler(this.#deleteCommentClickHandler);
     this.#modalComponent.setFormSubmitHandler(this.#formSubmitHandler);
+    this.#modalComponent.setModalWatchListClickHandler(this.#modalWatchListClickHandler);
+    this.#modalComponent.setModalWatchedClickHandler(this.#modalWatchedClickHandler);
+    this.#modalComponent.setModalFavoriteClickHandler(this.#modalFavoriteClickHandler);
 
     if (isModalShow) {
       this.#showModal();
@@ -125,27 +128,22 @@ export default class FilmPresenter {
 
   #deleteCommentClickHandler = (commentId, scrollTop) => {
     this.#saveModalScroll(scrollTop);
-    const filmComments = this.#film.comments.filter((comment) => comment !== commentId);
-
-    this.#commentsModel.deleteComment(UpdateType.MINOR, commentId);
 
     this.#changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.DELETE_COMMENT,
       UpdateType.MINOR,
-      {...this.#film, comments: filmComments}
+      commentId
     );
   };
 
   #formSubmitHandler = (film, newComment, scrollTop) => {
     this.#saveModalScroll(scrollTop);
-    film.comments.unshift(newComment.commentId);
-
-    this.#commentsModel.addComment(UpdateType.MINOR, film.id , newComment);
 
     this.#changeData(
-      UserAction.UPDATE_FILM,
+      UserAction.ADD_COMMENT,
       UpdateType.MINOR,
-      {...film, comments: film.comments}
+      film,
+      newComment
     );
   };
 
@@ -166,6 +164,36 @@ export default class FilmPresenter {
   };
 
   #favoriteClickHandler = () => {
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite }}
+    );
+  };
+
+  #modalWatchListClickHandler = (scrollTop) => {
+    this.#saveModalScroll(scrollTop);
+
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist }}
+    );
+  };
+
+  #modalWatchedClickHandler = (scrollTop) => {
+    this.#saveModalScroll(scrollTop);
+
+    this.#changeData(
+      UserAction.UPDATE_FILM,
+      UpdateType.MINOR,
+      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }}
+    );
+  };
+
+  #modalFavoriteClickHandler = (scrollTop) => {
+    this.#saveModalScroll(scrollTop);
+
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,

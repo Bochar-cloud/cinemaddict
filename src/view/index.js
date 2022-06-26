@@ -9,3 +9,4 @@ export { default as FilmsListContainerView } from 'View/films-list-container-vie
 export { default as FilmView } from 'View/film-view';
 export { default as EmptyFilmsView } from 'View/empty-films-view';
 export { default as LoadingView } from 'View/loading-view';
+export { default as FilmStatistics } from 'View/film-statistics-view';

@@ -33,21 +33,28 @@ const createModalTemplate = (film, filmComments) => {
   const alreadyWatchedClasses = classNames({'film-details__control-button--active' : alreadyWatched});
   const favoriteClasses = classNames({'film-details__control-button--active' : favorite});
 
-  const createComments = ({commentId, author, comment, commentDate, emotion}) => (
-    `<li class="film-details__comment">
-      <span class="film-details__comment-emoji">
-        <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
-      </span>
-      <div>
-        <p class="film-details__comment-text">${he.encode(comment)}</p>
-        <p class="film-details__comment-info">
-          <span class="film-details__comment-author">${author}</span>
-          <span class="film-details__comment-day">${normalizeFilmDate(commentDate, 'comment-date')}</span>
-          <button class="film-details__comment-delete" data-comment-id="${commentId}">Delete</button>
-        </p>
-      </div>
-    </li>`
-  );
+  const createComments = ({commentId, author, comment, commentDate, emotion}) => {
+    // console.log('commentId', commentId);
+    // console.log('author', author);
+    // console.log('comment', comment);
+    // console.log('commentDate', commentDate);
+    // console.log('emotion', emotion);
+    return (
+      `<li class="film-details__comment">
+        <span class="film-details__comment-emoji">
+          <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
+        </span>
+        <div>
+          <p class="film-details__comment-text">${he.encode(comment)}</p>
+          <p class="film-details__comment-info">
+            <span class="film-details__comment-author">${author}</span>
+            <span class="film-details__comment-day">${normalizeFilmDate(commentDate, 'comment-date')}</span>
+            <button class="film-details__comment-delete" data-comment-id="${commentId}">Delete</button>
+          </p>
+        </div>
+      </li>`
+    );
+  };
 
   const createCommentEmotion = (emotion) => (
     `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`
@@ -187,6 +194,30 @@ export default class ModalView extends AbstractStatefulView {
     this.#setInnerHandlers();
   }
 
+  get template() {
+    return createModalTemplate(this._state, this.#filmComments);
+  }
+
+  parseFilmToState = (film) => ({...film,
+    commentEmotion: film.commentEmotion,
+    commentText: film.commentText,
+  });
+
+  parseStateToFilm = (state) => {
+    const film = {...state};
+
+    delete film.commentText;
+    delete film.commentEmotion;
+
+    return film;
+  };
+
+  reset = (film) => {
+    this.updateElement(
+      this.parseFilmToState(film),
+    );
+  };
+
   setCloseButtonClickHandler = (callback) => {
     const closeButton = this.element.querySelector('.film-details__close-btn');
     this._callback.click = callback;
@@ -208,10 +239,19 @@ export default class ModalView extends AbstractStatefulView {
     commentInput.addEventListener('keydown', this.#formSubmitHandler);
   };
 
-  reset = (film) => {
-    this.updateElement(
-      this.parseFilmToState(film),
-    );
+  setModalWatchListClickHandler = (callback) => {
+    this._callback.watchListClick = callback;
+    this.element.querySelector('.film-details__control-button--watchlist').addEventListener('click', this.#watchListClickHandler);
+  };
+
+  setModalWatchedClickHandler = (callback) => {
+    this._callback.watchedClick = callback;
+    this.element.querySelector('.film-details__control-button--watched').addEventListener('click', this.#watchedClickHandler);
+  };
+
+  setModalFavoriteClickHandler = (callback) => {
+    this._callback.favoriteClick = callback;
+    this.element.querySelector('.film-details__control-button--favorite').addEventListener('click', this.#favoriteClickHandler);
   };
 
   _restoreHandlers = () => {
@@ -221,13 +261,23 @@ export default class ModalView extends AbstractStatefulView {
     this.setFormSubmitHandler(this._callback.commentFormSubmit);
   };
 
+  #setInnerHandlers = () => {
+    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emotionsChangeHandler);
+    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
+  };
+
+  #createNewCommentTemplate = (evt) => ({
+    comment: evt.target.value,
+    emotion: this.#commentEmotion,
+  });
+
   #hideModal = (evt) => {
     evt.preventDefault();
     this._callback.click();
   };
 
   #formSubmitHandler = (evt) => {
-    if (evt.ctrlKey && evt.key === 'Enter') {
+    if (evt.ctrlKey && evt.key === 'Enter' || evt.metaKey && evt.key === 'Enter' ) {
       evt.preventDefault();
       this.#scrollTop = this.element.scrollTop;
 
@@ -272,31 +322,24 @@ export default class ModalView extends AbstractStatefulView {
     });
   };
 
-  #setInnerHandlers = () => {
-    this.element.querySelector('.film-details__emoji-list').addEventListener('change', this.#emotionsChangeHandler);
-    this.element.querySelector('.film-details__comment-input').addEventListener('input', this.#commentInputHandler);
+  #watchListClickHandler = (evt) => {
+    evt.preventDefault();
+    const scrollPosition = this.element.scrollTop;
+
+    this._callback.watchListClick(scrollPosition);
   };
 
-  #createNewCommentTemplate = (evt) => ({
-    comment: evt.target.value,
-    emotion: this.#commentEmotion,
-  });
+  #watchedClickHandler = (evt) => {
+    evt.preventDefault();
+    const scrollPosition = this.element.scrollTop;
 
-  parseFilmToState = (film) => ({...film,
-    commentEmotion: film.commentEmotion,
-    commentText: film.commentText,
-  });
-
-  parseStateToFilm = (state) => {
-    const film = {...state};
-
-    delete film.commentText;
-    delete film.commentEmotion;
-
-    return film;
+    this._callback.watchedClick(scrollPosition);
   };
 
-  get template() {
-    return createModalTemplate(this._state, this.#filmComments);
-  }
+  #favoriteClickHandler = (evt) => {
+    evt.preventDefault();
+    const scrollPosition = this.element.scrollTop;
+
+    this._callback.favoriteClick(scrollPosition);
+  };
 }

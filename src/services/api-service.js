@@ -70,5 +70,9 @@ export default class FilmsApiServices extends ApiService {
 
     return adaptedFilm;
   };
+
+  #adaptCommentToServer = (comment) => {
+
+  };
 }
 

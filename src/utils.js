@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { FilterType } from 'Sourse/const';
+import { FilterType, RitingType } from 'Sourse/const';
 
 
 const DATE_FORMATS = {
@@ -68,4 +68,14 @@ const filter = {
   [FilterType.FAVORITES]: (films) => films.filter(({userDetails: { favorite }}) => favorite),
 };
 
-export { getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean, compareFilmsDate, compareFilmsRaiting, filter };
+const getUserRaiting = (watchedFilms) => {
+  if (watchedFilms >= 1 && watchedFilms < 11) {
+    return RitingType.NOVICE;
+  } else if (watchedFilms >= 11 && watchedFilms < 21) {
+    return RitingType.FAN;
+  } else if (watchedFilms >= 21) {
+    return RitingType.BUFF;
+  }
+};
+
+export { getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean, compareFilmsDate, compareFilmsRaiting, filter, getUserRaiting };

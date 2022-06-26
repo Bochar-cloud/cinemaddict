@@ -10,6 +10,14 @@ export default class CommentsModel extends Observable {
     this.#apiService = apiService;
   }
 
+  get comments() {
+    return this.#comments;
+  }
+
+  set comments(comments) {
+    this.#comments = comments;
+  }
+
   loadComments = async (film) => {
     try {
       const comments = await this.#apiService.getComments(film.id);
@@ -25,18 +33,14 @@ export default class CommentsModel extends Observable {
     this.#comments = [];
   };
 
-  get comments() {
-    return this.#comments;
-  }
-
   addComment = async (updateType, filmId, newFilmComment) => {
     try {
-      await this.#apiService.addComment(filmId ,newFilmComment);
+      const response = await this.#apiService.addComment(filmId, newFilmComment);
 
-      this.#comments.push(newFilmComment);
+      const comments = response.comments;
 
-      this._notify(updateType, newFilmComment);
-
+      this.comments = comments.map((comment) => this.#adaptToClient(comment));
+      this._notify(updateType);
     } catch {
       throw new Error('Can\'t add comment');
     }
@@ -45,7 +49,8 @@ export default class CommentsModel extends Observable {
   deleteComment = async (updateType, commentId) => {
     try {
       await this.#apiService.deleteComment(commentId);
-      this.#comments.filter((comment) => comment.commentId !== commentId);
+      const comments = this.#comments.filter((comment) => +comment.commentId !== commentId);
+      this.#comments = comments;
 
       this._notify(updateType);
     } catch {
