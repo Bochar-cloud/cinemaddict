@@ -9,17 +9,11 @@ const DATE_FORMATS = {
 };
 
 const MINUTES_PER_HOUR = 60;
-
-const getRandomInteger = (a = 0, b = 1) => {
-  const lower = Math.ceil(Math.min(a, b));
-  const upper = Math.floor(Math.max(a, b));
-
-  return Math.floor(lower + Math.random() * (upper - lower + 1));
-};
-
-const getRandomFloatInteger = (a = 0, b = 1, float = 1) => (Math.random() * (b - a) + a).toFixed(float);
-
-const getRandomBoolean = () => Boolean(getRandomInteger(0, 1));
+const MIN_LENGTH_NOVICE = 1;
+const MAX_LENGTH_NOVICE = 10;
+const MIN_LENGTH_FAN = 11;
+const MAX_LENGTH_FAN = 20;
+const MIN_LENGTH_BUFF = 21;
 
 const normalizeFilmDate = (date, placeDate = 'relise-date') => dayjs(date).format(DATE_FORMATS[placeDate]);
 
@@ -68,14 +62,18 @@ const filter = {
   [FilterType.FAVORITES]: (films) => films.filter(({userDetails: { favorite }}) => favorite),
 };
 
-const getUserRaiting = (watchedFilms) => {
-  if (watchedFilms >= 1 && watchedFilms < 11) {
+const getUserRaiting = (watchedFilmsLength) => {
+  if (watchedFilmsLength >= MIN_LENGTH_NOVICE && watchedFilmsLength <= MAX_LENGTH_NOVICE) {
     return RitingType.NOVICE;
-  } else if (watchedFilms >= 11 && watchedFilms < 21) {
+  }
+
+  if (watchedFilmsLength >= MIN_LENGTH_FAN && watchedFilmsLength <= MAX_LENGTH_FAN) {
     return RitingType.FAN;
-  } else if (watchedFilms >= 21) {
+  }
+
+  if (watchedFilmsLength >= MIN_LENGTH_BUFF) {
     return RitingType.BUFF;
   }
 };
 
-export { getRandomInteger, getRandomFloatInteger, normalizeFilmDate, normalizeRuntime, getRandomBoolean, compareFilmsDate, compareFilmsRaiting, filter, getUserRaiting };
+export { normalizeFilmDate, normalizeRuntime, compareFilmsDate, compareFilmsRaiting, filter, getUserRaiting };

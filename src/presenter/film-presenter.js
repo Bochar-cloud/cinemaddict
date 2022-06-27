@@ -14,26 +14,26 @@ export default class FilmPresenter {
   #modalComponent = null;
   #commentsModel = null;
   #changeData = null;
-
   #changeStatus = null;
-
+  #saveModalScroll = null;
+  #saveHtmlScroll = null;
+  #inActiveModal = null;
   #status = Status.HIDE;
 
-  #saveModalScroll = null;
-  #inActiveModal = null;
-
-  constructor(filmListContainer, changeData, changeStatus, saveModalScroll, inActiveModal) {
+  constructor(filmListContainer, changeData, changeStatus, saveModalScroll, inActiveModal, saveHtmlScroll) {
     this.#filmListContainer = filmListContainer;
     this.#changeData = changeData;
     this.#changeStatus = changeStatus;
     this.#saveModalScroll = saveModalScroll;
     this.#inActiveModal = inActiveModal;
+    this.#saveHtmlScroll = saveHtmlScroll;
   }
 
-  init = (film, commentsModel, isModalShow, scrollTop) => {
+  init = (film, commentsModel, isModalShow, scrollTop, htmlScrollTop) => {
     this.#film = film;
     this.#commentsModel = commentsModel;
     const prevFilmComponent = this.#filmComponent;
+    const prevModalComponent = this.#modalComponent;
 
     this.#filmComponent = new FilmView(this.#film);
     this.#modalComponent = new ModalView(this.#film, this.#commentsModel.comments);
@@ -57,7 +57,11 @@ export default class FilmPresenter {
       this.#modalComponent.element.scroll(0, scrollTop);
     }
 
-    if (prevFilmComponent === null) {
+    if (htmlScrollTop) {
+      document.documentElement.scroll(0, htmlScrollTop);
+    }
+
+    if (prevFilmComponent === null || prevModalComponent === null ) {
       render(this.#filmComponent, this.#filmListContainer);
       return;
     }
@@ -68,9 +72,11 @@ export default class FilmPresenter {
 
     if (this.#status === Status.SHOW) {
       replace(this.#filmComponent, prevFilmComponent);
+      this.#status = Status.HIDE;
     }
 
     remove(prevFilmComponent);
+    remove(prevModalComponent);
   };
 
   destroy = () => {
@@ -85,6 +91,39 @@ export default class FilmPresenter {
     }
   };
 
+  setAdded = () => {
+    if (this.#status === Status.SHOW) {
+      this.#modalComponent.updateElement({
+        isDisabled: true,
+      });
+    }
+  };
+
+  setDeleting = () => {
+    if (this.#status === Status.SHOW) {
+      this.#modalComponent.updateElement({
+        isDisabled: true,
+        isDeleting: true,
+      });
+    }
+  };
+
+  setAbording = () => {
+    if (this.#status === Status.HIDE) {
+      this.#filmComponent.shake();
+      return;
+    }
+
+    const resetFormState = () => {
+      this.#modalComponent.updateElement({
+        isDisabled: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#modalComponent.shake(resetFormState);
+  };
+
   #showModal = () => {
     if (!this.#commentsModel.comments.length) {
       this.#commentsModel.loadComments(this.#film);
@@ -95,6 +134,7 @@ export default class FilmPresenter {
     document.body.appendChild(this.#modalComponent.element);
     document.body.classList.add('hide-overflow');
     document.addEventListener('keydown', this.#escapeKeydownHandler);
+
     this.#changeStatus(this.#film.id);
     this.#status = Status.SHOW;
   };
@@ -117,7 +157,9 @@ export default class FilmPresenter {
     }
   };
 
-  #filmClickHandler = () => {
+  #filmClickHandler = (htmlScrollTop) => {
+    this.#saveHtmlScroll(htmlScrollTop);
+
     this.#showModal();
   };
 
@@ -132,7 +174,8 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.DELETE_COMMENT,
       UpdateType.MINOR,
-      commentId
+      this.#film,
+      commentId,
     );
   };
 

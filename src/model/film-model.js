@@ -25,6 +25,23 @@ export default class FilmModel extends Observable {
     this._notify(UpdateType.INIT);
   };
 
+  addComment = (filmId, commentId) => {
+    this.#films.find((film) => {
+      if (film.id === filmId) {
+        film.comments.push(commentId);
+      }
+    });
+  };
+
+  deleteComment = (filmId, commentId) => {
+    const film = this.#films.find((findFilm) => findFilm.id === filmId);
+
+    if (film) {
+      const idx = film.comments.findIndex((comment) => +comment === commentId);
+      film.comments.splice(idx, 1);
+    }
+  };
+
   updateFilm = async (updateType, update) => {
     const index = this.#films.findIndex((film) => film.id === update.id);
 

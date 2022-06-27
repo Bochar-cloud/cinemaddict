@@ -27,34 +27,31 @@ const createModalTemplate = (film, filmComments) => {
     },
     commentEmotion,
     commentText,
+    isDisabled,
+    isDeleting,
   } = film;
 
   const watchlistClasses = classNames({'film-details__control-button--active' : watchlist});
   const alreadyWatchedClasses = classNames({'film-details__control-button--active' : alreadyWatched});
   const favoriteClasses = classNames({'film-details__control-button--active' : favorite});
 
-  const createComments = ({commentId, author, comment, commentDate, emotion}) => {
-    // console.log('commentId', commentId);
-    // console.log('author', author);
-    // console.log('comment', comment);
-    // console.log('commentDate', commentDate);
-    // console.log('emotion', emotion);
-    return (
-      `<li class="film-details__comment">
-        <span class="film-details__comment-emoji">
-          <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
-        </span>
-        <div>
-          <p class="film-details__comment-text">${he.encode(comment)}</p>
-          <p class="film-details__comment-info">
-            <span class="film-details__comment-author">${author}</span>
-            <span class="film-details__comment-day">${normalizeFilmDate(commentDate, 'comment-date')}</span>
-            <button class="film-details__comment-delete" data-comment-id="${commentId}">Delete</button>
-          </p>
-        </div>
-      </li>`
-    );
-  };
+  const createComments = ({commentId, author, comment, commentDate, emotion}) => (
+    `<li class="film-details__comment">
+      <span class="film-details__comment-emoji">
+        <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
+      </span>
+      <div>
+        <p class="film-details__comment-text">${he.encode(comment)}</p>
+        <p class="film-details__comment-info">
+          <span class="film-details__comment-author">${author}</span>
+          <span class="film-details__comment-day">${normalizeFilmDate(commentDate, 'comment-date')}</span>
+          <button class="film-details__comment-delete" data-comment-id="${commentId}" ${isDisabled ? 'disabled' : ''}>
+            ${isDeleting ? 'Deleting...' : 'Delete'}
+          </button>
+        </p>
+      </div>
+    </li>`
+  );
 
   const createCommentEmotion = (emotion) => (
     `<img src="images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">`
@@ -149,7 +146,7 @@ const createModalTemplate = (film, filmComments) => {
               </div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment">${commentText ? commentText : ''}</textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisabled ? 'disabled' : ''} >${commentText ? commentText : ''}</textarea>
               </label>
 
               <input type="hidden" id="comment-emoji" name="comment-emoji">
@@ -201,6 +198,8 @@ export default class ModalView extends AbstractStatefulView {
   parseFilmToState = (film) => ({...film,
     commentEmotion: film.commentEmotion,
     commentText: film.commentText,
+    isDesabled: false,
+    isDeleting: false,
   });
 
   parseStateToFilm = (state) => {
@@ -208,6 +207,8 @@ export default class ModalView extends AbstractStatefulView {
 
     delete film.commentText;
     delete film.commentEmotion;
+    delete film.isDesabled;
+    delete film.isDeleting;
 
     return film;
   };
@@ -259,6 +260,11 @@ export default class ModalView extends AbstractStatefulView {
     this.setCloseButtonClickHandler(this._callback.click);
     this.setDeleteCommentClickHandler(this._callback.deleteClick);
     this.setFormSubmitHandler(this._callback.commentFormSubmit);
+    this.setModalWatchListClickHandler(this._callback.watchListClick);
+    this.setModalWatchedClickHandler(this._callback.watchedClick);
+    this.setModalFavoriteClickHandler(this._callback.favoriteClick);
+
+    this.element.scroll(0, this.#scrollTop);
   };
 
   #setInnerHandlers = () => {
@@ -277,7 +283,7 @@ export default class ModalView extends AbstractStatefulView {
   };
 
   #formSubmitHandler = (evt) => {
-    if (evt.ctrlKey && evt.key === 'Enter' || evt.metaKey && evt.key === 'Enter' ) {
+    if (evt.key === 'Enter' && (evt.ctrlKey || evt.metaKey)) {
       evt.preventDefault();
       this.#scrollTop = this.element.scrollTop;
 

@@ -63,6 +63,7 @@ export default class FilmView extends AbstractView {
 
   setLinkClickHandler = (callback) => {
     const link = this.element.querySelector('.film-card__link');
+
     this._callback.click = callback;
 
     link.addEventListener('click', this.#showModal);
@@ -86,7 +87,9 @@ export default class FilmView extends AbstractView {
   #showModal = (evt) => {
     evt.preventDefault();
 
-    this._callback.click();
+    const htmlScrollTop = document.documentElement.scrollTop;
+
+    this._callback.click(htmlScrollTop);
   };
 
   #watchListClickHandler = (evt) => {

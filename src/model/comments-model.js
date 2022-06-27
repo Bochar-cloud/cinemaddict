@@ -3,11 +3,13 @@ import { UpdateType } from 'Sourse/const';
 
 export default class CommentsModel extends Observable {
   #apiService = null;
+  #filmModel = null;
   #comments = [];
 
-  constructor (apiService) {
+  constructor (apiService, filmModel) {
     super();
     this.#apiService = apiService;
+    this.#filmModel = filmModel;
   }
 
   get comments() {
@@ -40,17 +42,21 @@ export default class CommentsModel extends Observable {
       const comments = response.comments;
 
       this.comments = comments.map((comment) => this.#adaptToClient(comment));
+      this.#filmModel.addComment(filmId, comments[comments.length - 1].id);
+
       this._notify(updateType);
     } catch {
       throw new Error('Can\'t add comment');
     }
   };
 
-  deleteComment = async (updateType, commentId) => {
+  deleteComment = async (updateType, filmid, commentId) => {
     try {
       await this.#apiService.deleteComment(commentId);
       const comments = this.#comments.filter((comment) => +comment.commentId !== commentId);
       this.#comments = comments;
+
+      this.#filmModel.deleteComment(filmid, commentId);
 
       this._notify(updateType);
     } catch {

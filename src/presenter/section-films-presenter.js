@@ -3,8 +3,13 @@ import { FilmPresenter } from 'Presenter';
 import { render, remove, RenderPosition } from 'Framework/render';
 import { compareFilmsDate, compareFilmsRaiting, filter, getUserRaiting } from 'Sourse/utils';
 import { SortType, UpdateType, UserAction, FilterType } from 'Sourse/const';
+import UiBlocker from 'Framework/ui-blocker/ui-blocker';
 
 const FILMS_COUNT_STEP = 5;
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class SectionFilmsPresenter {
   #sectionFilmsComponent = new SectionFilmsView();
@@ -18,6 +23,7 @@ export default class SectionFilmsPresenter {
   #filmsStatisticsComponent = null;
   #activeModal = null;
   #scrollTop = null;
+  #htmlScrollTop = null;
   #container = null;
   #headerContainer = null;
   #footerContainer = null;
@@ -30,6 +36,7 @@ export default class SectionFilmsPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.ALL;
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   #sortMap = {
     [SortType.DEFAULT]: (filteredFilms) => filteredFilms,
@@ -63,18 +70,37 @@ export default class SectionFilmsPresenter {
     this.#renderFilmListContainer();
   };
 
-  #handleViewAction = (actionType, updateType, update, comment) => {
+  #handleViewAction = async (actionType, updateType, update, comment) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this.#filmModel.updateFilm(updateType, update);
+        this.#filmPresenter.get(update.id).setAdded();
+        try {
+          await this.#filmModel.updateFilm(updateType, update);
+        } catch (error) {
+          this.#filmPresenter.get(update.id).setAbording();
+        }
         break;
       case UserAction.ADD_COMMENT:
-        this.#commentsModel.addComment(updateType, update.id, comment);
+        this.#filmPresenter.get(update.id).setAdded();
+        try {
+          await this.#commentsModel.addComment(updateType, update.id, comment);
+        } catch (error) {
+          this.#filmPresenter.get(update.id).setAbording();
+        }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#commentsModel.deleteComment(updateType, update);
+        this.#filmPresenter.get(update.id).setDeleting();
+        try {
+          await this.#commentsModel.deleteComment(updateType, update.id, comment);
+        } catch (error) {
+          this.#filmPresenter.get(update.id).setAbording();
+        }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
@@ -152,6 +178,20 @@ export default class SectionFilmsPresenter {
     }
   };
 
+  #renderFilm = (film, comments) => {
+    const filmPresenter = new FilmPresenter(
+      this.#filmsListContainerComponent.element,
+      this.#handleViewAction,
+      this.#changeStatusModalHandler,
+      this.#saveModalScroll,
+      this.#inActiveModal,
+      this.#saveHtmlScroll,
+    );
+
+    filmPresenter.init(film, comments, this.#activeModal === film.id, this.#scrollTop, this.#htmlScrollTop);
+    this.#filmPresenter.set(film.id, filmPresenter);
+  };
+
   #renderLoading = () => {
     render(this.#loadingComponent, this.#filmsListComponent.element);
   };
@@ -160,19 +200,6 @@ export default class SectionFilmsPresenter {
     films.forEach((film) => {
       this.#renderFilm(film, this.#commentsModel);
     });
-  };
-
-  #renderFilm = (film, comments) => {
-    const filmPresenter = new FilmPresenter(
-      this.#filmsListContainerComponent.element,
-      this.#handleViewAction,
-      this.#changeStatusModalHandler,
-      this.#saveModalScroll,
-      this.#inActiveModal,
-    );
-
-    filmPresenter.init(film, comments, this.#activeModal === film.id, this.#scrollTop);
-    this.#filmPresenter.set(film.id, filmPresenter);
   };
 
   #renderEmptyFilm = () => {
@@ -187,10 +214,9 @@ export default class SectionFilmsPresenter {
     this.#moreButtonComponent.setMoreButtonClickHandler(this.#clickShowMoreButtonHandler);
   };
 
-  #changeStatusModalHandler = (id, scrollTop) => {
+  #changeStatusModalHandler = (id) => {
     this.#filmPresenter.forEach((presenter) => presenter.resetView());
     this.#activeModal = id;
-    this.#scrollTop = scrollTop;
   };
 
   #renderSort = () => {
@@ -212,6 +238,10 @@ export default class SectionFilmsPresenter {
 
   #saveModalScroll = (scrollTop) => {
     this.#scrollTop = scrollTop;
+  };
+
+  #saveHtmlScroll = (scrollTop) => {
+    this.#htmlScrollTop = scrollTop;
   };
 
   #inActiveModal = () => {
