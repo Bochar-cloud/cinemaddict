@@ -78,7 +78,7 @@ export default class SectionFilmsPresenter {
         try {
           await this.#filmModel.updateFilm(updateType, update);
         } catch (error) {
-          this.#filmPresenter.get(update.id).setAbording();
+          this.#filmPresenter.get(update.id).setAbording(UserAction.UPDATE_FILM);
         }
         break;
       case UserAction.ADD_COMMENT:
@@ -86,15 +86,15 @@ export default class SectionFilmsPresenter {
         try {
           await this.#commentsModel.addComment(updateType, update.id, comment);
         } catch (error) {
-          this.#filmPresenter.get(update.id).setAbording();
+          this.#filmPresenter.get(update.id).setAbording(UserAction.ADD_COMMENT);
         }
         break;
       case UserAction.DELETE_COMMENT:
-        this.#filmPresenter.get(update.id).setDeleting();
+        this.#filmPresenter.get(update.id).setDeleting(comment);
         try {
           await this.#commentsModel.deleteComment(updateType, update.id, comment);
         } catch (error) {
-          this.#filmPresenter.get(update.id).setAbording();
+          this.#filmPresenter.get(update.id).setAbording(UserAction.DELETE_COMMENT, comment);
         }
         break;
     }

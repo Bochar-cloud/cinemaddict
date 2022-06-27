@@ -1,10 +1,8 @@
-// import { UserRaitingView, FilmStatistics } from 'View';
 import { SectionFilmsPresenter, FilterPresenter } from 'Presenter';
 import { FilmModel, CommentsModel, FilterModel } from 'Model';
 import FilmsApiServices from 'Sourse/services/api-service';
-// import { render } from 'Framework/render';
 
-const AUTHORIZATION = 'Basic dsZXXZdsadaasdd';
+const AUTHORIZATION = 'Basic dsZXXZdsadas121asdd';
 const END_POINT = 'https://17.ecmascript.pages.academy/cinemaddict';
 
 const siteMainElement = document.querySelector('.main');

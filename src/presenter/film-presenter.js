@@ -29,6 +29,36 @@ export default class FilmPresenter {
     this.#saveHtmlScroll = saveHtmlScroll;
   }
 
+  setAbording = (userAction, commentId) => {
+    const formElement = this.#modalComponent.element.querySelector('.film-details__inner');
+    const currentComment = this.#modalComponent.element.querySelector(`[data-comment-id="${commentId}"]`);
+    const filmControlls = this.#modalComponent.element.querySelector('.film-details__controls');
+
+    const resetFormState = () => {
+      this.#modalComponent.updateElement({
+        isDisabled: false,
+        isDeleting: false,
+      });
+    };
+
+    switch (userAction) {
+      case UserAction.UPDATE_FILM:
+        if (this.#status === Status.HIDE) {
+          this.#filmComponent.shake(this.#filmComponent.element);
+          return;
+        }
+
+        this.#filmComponent.shake(filmControlls);
+        break;
+      case UserAction.DELETE_COMMENT:
+        this.#modalComponent.shake(currentComment, resetFormState);
+        break;
+      case UserAction.ADD_COMMENT:
+        this.#modalComponent.shake(formElement, resetFormState);
+        break;
+    }
+  };
+
   init = (film, commentsModel, isModalShow, scrollTop, htmlScrollTop) => {
     this.#film = film;
     this.#commentsModel = commentsModel;
@@ -109,24 +139,6 @@ export default class FilmPresenter {
         isDeleting: true,
       });
     }
-  };
-
-  setAbording = () => {
-    const modalElement = this.#modalComponent.element.querySelector('.film-details__inner');
-
-    if (this.#status === Status.HIDE) {
-      this.#filmComponent.shake(this.#filmComponent.element);
-      return;
-    }
-
-    const resetFormState = () => {
-      this.#modalComponent.updateElement({
-        isDisabled: false,
-        isDeleting: false,
-      });
-    };
-
-    this.#modalComponent.shake(modalElement, resetFormState);
   };
 
   #showModal = () => {

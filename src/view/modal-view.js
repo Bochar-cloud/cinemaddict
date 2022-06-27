@@ -36,7 +36,7 @@ const createModalTemplate = (film, filmComments) => {
   const favoriteClasses = classNames({'film-details__control-button--active' : favorite});
 
   const createComments = ({commentId, author, comment, commentDate, emotion}) => (
-    `<li class="film-details__comment">
+    `<li class="film-details__comment" data-comment-id="${commentId}">
       <span class="film-details__comment-emoji">
         <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
       </span>
@@ -63,7 +63,7 @@ const createModalTemplate = (film, filmComments) => {
 
   return (
     `<section class="film-details">
-      <form class="film-details__inner" action="" method="get">
+      <form class="film-details__inner" action="" method="get" ${isDisabled ? 'disabled' : ''}>
         <div class="film-details__top-container">
           <div class="film-details__close">
             <button class="film-details__close-btn" type="button">close</button>
@@ -146,7 +146,7 @@ const createModalTemplate = (film, filmComments) => {
               </div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${isDisabled ? 'disabled' : ''} >${commentText ? commentText : ''}</textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" >${commentText ? commentText : ''}</textarea>
               </label>
 
               <input type="hidden" id="comment-emoji" name="comment-emoji">
