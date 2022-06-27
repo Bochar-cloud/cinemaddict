@@ -75,7 +75,6 @@ export default class SectionFilmsPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_FILM:
-        this.#filmPresenter.get(update.id).setAdded();
         try {
           await this.#filmModel.updateFilm(updateType, update);
         } catch (error) {

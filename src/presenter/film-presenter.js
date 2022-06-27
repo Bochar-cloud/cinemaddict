@@ -34,7 +34,6 @@ export default class FilmPresenter {
     this.#commentsModel = commentsModel;
     const prevFilmComponent = this.#filmComponent;
     const prevModalComponent = this.#modalComponent;
-
     this.#filmComponent = new FilmView(this.#film);
     this.#modalComponent = new ModalView(this.#film, this.#commentsModel.comments);
 
@@ -48,6 +47,10 @@ export default class FilmPresenter {
     this.#modalComponent.setModalWatchListClickHandler(this.#modalWatchListClickHandler);
     this.#modalComponent.setModalWatchedClickHandler(this.#modalWatchedClickHandler);
     this.#modalComponent.setModalFavoriteClickHandler(this.#modalFavoriteClickHandler);
+
+    if (this.#status === Status.SHOW) {
+      replace(this.#modalComponent, prevModalComponent);
+    }
 
     if (isModalShow) {
       this.#showModal();
@@ -109,8 +112,10 @@ export default class FilmPresenter {
   };
 
   setAbording = () => {
+    const modalElement = this.#modalComponent.element.querySelector('.film-details__inner');
+
     if (this.#status === Status.HIDE) {
-      this.#filmComponent.shake();
+      this.#filmComponent.shake(this.#filmComponent.element);
       return;
     }
 
@@ -121,7 +126,7 @@ export default class FilmPresenter {
       });
     };
 
-    this.#modalComponent.shake(resetFormState);
+    this.#modalComponent.shake(modalElement, resetFormState);
   };
 
   #showModal = () => {
