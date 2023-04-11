@@ -38,6 +38,7 @@ export default class FilmPresenter {
       this.#modalComponent.updateElement({
         isDisabled: false,
         isDeleting: false,
+        currentId: commentId,
       });
     };
 
@@ -94,7 +95,7 @@ export default class FilmPresenter {
       document.documentElement.scroll(0, htmlScrollTop);
     }
 
-    if (prevFilmComponent === null || prevModalComponent === null ) {
+    if (prevFilmComponent === null || prevModalComponent === null) {
       render(this.#filmComponent, this.#filmListContainer);
       return;
     }
@@ -211,7 +212,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist }}
+      { ...this.#film, userDetails: { ...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist } }
     );
   };
 
@@ -219,7 +220,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }}
+      { ...this.#film, userDetails: { ...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched } }
     );
   };
 
@@ -227,7 +228,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite }}
+      { ...this.#film, userDetails: { ...this.#film.userDetails, favorite: !this.#film.userDetails.favorite } }
     );
   };
 
@@ -237,7 +238,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist }}
+      { ...this.#film, userDetails: { ...this.#film.userDetails, watchlist: !this.#film.userDetails.watchlist } }
     );
   };
 
@@ -247,7 +248,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched }}
+      { ...this.#film, userDetails: { ...this.#film.userDetails, alreadyWatched: !this.#film.userDetails.alreadyWatched } }
     );
   };
 
@@ -257,7 +258,7 @@ export default class FilmPresenter {
     this.#changeData(
       UserAction.UPDATE_FILM,
       UpdateType.MINOR,
-      {...this.#film, userDetails: {...this.#film.userDetails, favorite: !this.#film.userDetails.favorite }}
+      { ...this.#film, userDetails: { ...this.#film.userDetails, favorite: !this.#film.userDetails.favorite } }
     );
   };
 }

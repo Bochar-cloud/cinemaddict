@@ -6,7 +6,7 @@ import classNames from 'classnames';
 const createModalTemplate = (film, filmComments) => {
 
   const {
-    filmInfo : {
+    filmInfo: {
       title,
       alternativeTitle,
       totalRating,
@@ -20,7 +20,7 @@ const createModalTemplate = (film, filmComments) => {
       actors,
       ageRating
     },
-    userDetails : {
+    userDetails: {
       watchlist,
       alreadyWatched,
       favorite,
@@ -29,13 +29,14 @@ const createModalTemplate = (film, filmComments) => {
     commentText,
     isDisabled,
     isDeleting,
+    currentId
   } = film;
 
-  const watchlistClasses = classNames({'film-details__control-button--active' : watchlist});
-  const alreadyWatchedClasses = classNames({'film-details__control-button--active' : alreadyWatched});
-  const favoriteClasses = classNames({'film-details__control-button--active' : favorite});
+  const watchlistClasses = classNames({ 'film-details__control-button--active': watchlist });
+  const alreadyWatchedClasses = classNames({ 'film-details__control-button--active': alreadyWatched });
+  const favoriteClasses = classNames({ 'film-details__control-button--active': favorite });
 
-  const createComments = ({commentId, author, comment, commentDate, emotion}) => (
+  const createComments = ({ commentId, author, comment, commentDate, emotion }) => (
     `<li class="film-details__comment" data-comment-id="${commentId}">
       <span class="film-details__comment-emoji">
         <img src="./images/emoji/${emotion}.png" width="55" height="55" alt="emoji-${emotion}">
@@ -46,7 +47,7 @@ const createModalTemplate = (film, filmComments) => {
           <span class="film-details__comment-author">${author}</span>
           <span class="film-details__comment-day">${normalizeFilmDate(commentDate, 'comment-date')}</span>
           <button class="film-details__comment-delete" data-comment-id="${commentId}" ${isDisabled ? 'disabled' : ''}>
-            ${isDeleting ? 'Deleting...' : 'Delete'}
+            ${isDeleting && currentId === commentId ? 'Deleting...' : 'Delete'}
           </button>
         </p>
       </div>
@@ -195,7 +196,8 @@ export default class ModalView extends AbstractStatefulView {
     return createModalTemplate(this._state, this.#filmComments);
   }
 
-  parseFilmToState = (film) => ({...film,
+  parseFilmToState = (film) => ({
+    ...film,
     commentEmotion: film.commentEmotion,
     commentText: film.commentText,
     isDesabled: false,
@@ -203,7 +205,7 @@ export default class ModalView extends AbstractStatefulView {
   });
 
   parseStateToFilm = (state) => {
-    const film = {...state};
+    const film = { ...state };
 
     delete film.commentText;
     delete film.commentEmotion;
@@ -289,7 +291,7 @@ export default class ModalView extends AbstractStatefulView {
 
       const currentFilm = this.parseStateToFilm(this._state);
 
-      this._callback.commentFormSubmit(currentFilm ,this.#createNewCommentTemplate(evt), this.#scrollTop);
+      this._callback.commentFormSubmit(currentFilm, this.#createNewCommentTemplate(evt), this.#scrollTop);
     }
   };
 
